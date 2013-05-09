@@ -17,8 +17,26 @@
 	<!--[if lte IE 6]><link rel="stylesheet" href="css/style_ie.css" type="text/css" media="screen, projection" /><![endif]-->
 	<style type="text/css" title="currentStyle">@import "css/table.css";</style>
 
-	<!-- jquery & datatable stuff -->
+	<!-- jquery, chart,js & datatable stuff -->
 	<script type="text/javascript" language="javascript" src="js/jquery/jquery-1.9.1-min.js"></script>
+	<script src="js/Chart.js_Regaddi/Chart.min_20130509.js"></script>
+
+
+	<script>
+	function doPost() 
+	{ 
+		form1.Submit1.click();
+	} 
+
+
+	function doHide()
+	{
+        document.getElementById('graph1').style.display = "none";
+	}
+	</script>
+
+
+
 	<script type="text/javascript" language="javascript" src="js/jquery.dataTables.js"></script>
 	<script type="text/javascript" charset="utf-8">
 		var asInitVals = new Array();
@@ -72,7 +90,8 @@
 			<a href="index.php"><img src="img/icon_large_rotated.png" align="left" height="90pt"></a>
 			<h1><a href="index.php"><?php  echo $appname; ?></a></h1>
 			<h2><?php  echo $tagline; ?></h2>
-			<select required name="dropdown" value="options" >
+			<!--
+			<select name="dropdown" value="options" >
 				<option disabled selected>Choose..</option>	
 
 				<option disabled="disabled">&nbsp;</option>
@@ -102,7 +121,40 @@
 				<option value="artist_per_genre">- Amount of artists per genre</option>
 				<option value="track_per_genre">- Amount of tracks per genre</option>
 			</select>
-			<input type="Submit" Name="Submit1" value="Load">
+			-->
+
+			<select name="dropdown" value="options" onchange="doPost();">
+				<option disabled selected>Tracks</option>	
+				<option value="track_per_lastplayed">- Play history</option>
+				<option value="track_per_playcount">- Most played tracks</option>
+				<option value="track_per_skipcount">- Most skipped tracks</option>
+				<option value="track_per_rating">- Best rated tracks</option>
+				<option value="track_per_score">- Best scored tracks</option>
+				<option value="all_tracks">- All tracks (experimental)</option>
+			</select>
+
+			<select name="dropdown" value="options" onchange="doPost();">
+				<option disabled selected>Artists</option>			
+				<option value="track_per_artist">- Artist with most tracks</option>
+				<option value="artist_per_playcount">- Most played artist</option>
+				<option value="artist_per_skipcount">- Most skipped artist</option>
+				<option value="artist_per_rating">- Best rated artist</option>
+				<option value="artist_per_score">- Best scored artist</option>
+			</select>
+
+			<select name="dropdown" value="options" onchange="doPost();">
+				<option disabled selected>Albums</option>	
+				<option value="album_per_playcount">- Most played album</option>	
+			</select>
+
+			<select name="dropdown" value="options" onchange="doPost();">
+				<option disabled selected>Genre</option>	
+				<option value="genre_per_playcount">- Most played genre</option>
+				<option value="artist_per_genre">- Amount of artists per genre</option>
+				<option value="track_per_genre">- Amount of tracks per genre</option>
+			</select>
+
+			<input hidden type="Submit" Name="Submit1" value="Load">
 
 			<?php
 				echo '<div id="header_info">';
@@ -136,8 +188,9 @@
 				<img src="img/noscript.gif" alt="image description">
 			</noscript> 
 
+				<br>
 
-			<h3>basics</h3>
+			
 				<?php 
 					//
 					// Check if db file is valid
@@ -257,7 +310,6 @@
 				$sql_statement = "SELECT artist, album, title, genre, year FROM songs WHERE unavailable != '1' ORDER BY album";
 				$cols = 6;
 				$tableColumns = "<th>No.</th><th>Artist.</th><th>Album</th><th>Title</th><th>Genre</th><th>Year</th>";
-				$othersFactor = 0.05;
 				$queryDescription = "Shows all tracks";
 			break;
 
@@ -268,6 +320,7 @@
 				$cols = 3;
 				$tableColumns = "<th>No.</th><th>Genre</th><th>Tracks</th>";
 				$queryDescription = "Shows the amount of tracks per genre";
+				$graph = true;
 			break;
 							
 			case "track_per_artist":
@@ -325,6 +378,7 @@
 				$cols = 3;
 				$tableColumns = "<th>No.</th><th>Genre</th><th>Artists</th>";
 				$queryDescription = "Shows the artists with the most tracks";
+				$graph = true;
 			break;
 							
 			case "artist_per_playcount":	
@@ -375,6 +429,7 @@
 				$cols = 4;
 				$tableColumns = "<th>No.</th><th>Genre</th><th>Overall Playcount</th><th>Played tracks</th>";
 				$queryDescription = "Shows the most played genre based on playcount";
+				$graph = true;
 			break;
 																						
 			// SPECIAL-CASE ;)
@@ -384,7 +439,26 @@
 			break;
 		}
 		// endswitch case
-												
+
+
+		// chart.js - generate a Graph placeholder if needed
+		if($graph == true)
+		{
+			echo '<div id="graph1">';
+			echo '<h3>Graph</h3>';
+			echo '<canvas id="myChart" width="400" height="250"></canvas>';
+			echo '<input type="button" Name="hideButton" value="Hide Graph" onclick="doHide();">';
+			echo '</div>';
+		}
+
+		?>
+
+		<script>
+			// create the array object to store values 
+			var data = [];
+		</script>
+
+		<?php									
 		// do query & output
 		if($sql_statement != "")
 		{
@@ -397,6 +471,34 @@
 																							
 			while ($row = $result->fetchArray()) 
 			{
+				// TODO
+				//
+				// add data to array for graph
+				if($graph == true)
+				{
+					$randomColor = sprintf("#%x%x%x", rand(200,240), rand(50,200), rand(20,70));
+			?>
+					<script>
+						// prepare chart-js graph
+						//
+						// Get the context of the canvas element we want to select
+						var ctx = document.getElementById("myChart").getContext("2d");
+						//var randomColor = '#'+(0x1000000+(Math.random())*0xff0000).toString(16).substr(1,6);
+						
+						// push data to js- graph data
+						data.push({
+		        			value: <?php echo $row[1]; ?>,
+		        			label: "<?php echo $row[0]; ?>",
+		        			//color: '#'+(0x1000000+(Math.random())*0xffffff).toString(16).substr(1,6),
+		        			color: "<?php echo $randomColor; ?>",
+		        			labelColor : 'black',
+		                	labelFontSize : '16'
+		    			});
+					</script>
+			<?php
+				}
+				// fill table
+				//
 				$hits = $hits+1;			
 				switch ($cols)
 				{
@@ -494,6 +596,20 @@
 			echo '</tr>';
 			echo '</tfoot>';
 			echo '<table>';
+
+			if($graph == true)
+			{
+		?>
+				<script>
+					// Default-values here: http://www.chartjs.org/docs/
+					var pieoptions = {	
+					}
+
+					// chart.js: generate the graph
+					new Chart(ctx).Pie(data,pieoptions);
+				</script>
+		<?php
+			}
 		}
 	}
 ?>
