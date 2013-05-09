@@ -1,4 +1,4 @@
 clemStats
 =========
 
-a clementine database analyzer
+a web-based clementine database analyzer

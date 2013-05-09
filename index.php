@@ -10,12 +10,12 @@
 
 	<meta name="keywords" content="clementine" />
 	<meta name="description" content="clementine stats" />
-
 	<link rel='shortcut icon' type='image/x-icon' href='img/favicon.ico' />
 
 	<!-- CSS STUFF -->
 	<link rel="stylesheet" href="css/latest.css" type="text/css" media="screen, projection" />
 	<!--[if lte IE 6]><link rel="stylesheet" href="css/style_ie.css" type="text/css" media="screen, projection" /><![endif]-->
+	<style type="text/css" title="currentStyle">@import "css/table.css";</style>
 
 	<!-- jquery & datatable stuff -->
 	<script type="text/javascript" language="javascript" src="js/jquery/jquery-1.9.1-min.js"></script>
@@ -38,10 +38,7 @@
 				oTable.fnFilter( this.value, $("tfoot input").index(this) );
 			} );
 			
-			/*
-			 * Support functions to provide a little bit of 'user friendlyness' to the textboxes in 
-			 * the footer
-			 */
+			// Support functions to provide a little bit of 'user friendlyness' to the textboxes in the footer
 			$("tfoot input").each( function (i) {
 				asInitVals[i] = this.value;
 			} );
@@ -63,8 +60,6 @@
 			} );
 		} );
 	</script>
-
-	<style type="text/css" title="currentStyle">@import "css/table.css";</style>
 </head>
 
 
@@ -79,34 +74,39 @@
 			<h2><?php  echo $tagline; ?></h2>
 			<select required name="dropdown" value="options" >
 				<option disabled selected>Choose..</option>	
-				<option disabled="disabled">Tracks</option>
-				<option value="track_per_genre">- per genre</option>
-				<option value="track_per_artist">- per artist</option>
-				<option value="track_per_lastplayed">- per lastplayed</option>
-				<option value="track_per_playcount">- per playcount</option>
-				<option value="track_per_skipcount">- per skipcount</option>
-				<option value="track_per_rating">- per rating</option>
-				<option value="track_per_score">- per score</option>
-				<option value="all_tracks">- all tracks (slow)</option>			
-				<option disabled="disabled">Artist</option>
-				<option value="artist_per_genre">- per genre</option>
-				<option value="artist_per_playcount">- per playcount</option>
-				<option value="artist_per_skipcount">- per skipcount</option>
-				<option value="artist_per_rating">- per rating</option>
-				<option value="artist_per_score">- per score</option>		
-				<option disabled="disabled">Albums</option>
-				<option value="album_per_playcount">- per playcount</option>		
-				<option disabled="disabled">Genre</option>
-				<option value="genre_per_playcount">- per playcount</option>
-			</select>
 
-			<INPUT TYPE = "Submit" Name = "Submit1" VALUE = "Load">
+				<option disabled="disabled">&nbsp;</option>
+				<option disabled="disabled">Tracks</option>
+				<option value="track_per_lastplayed">- Play history</option>
+				<option value="track_per_playcount">- Most played tracks</option>
+				<option value="track_per_skipcount">- Most skipped tracks</option>
+				<option value="track_per_rating">- Best rated tracks</option>
+				<option value="track_per_score">- Best scored tracks</option>
+				<option value="all_tracks">- All tracks (experimental - slow)</option>
+
+				<option disabled="disabled">&nbsp;</option>		
+				<option disabled="disabled">Artist</option>
+				<option value="track_per_artist">- Artist with most tracks</option>
+				<option value="artist_per_playcount">- Most played artist</option>
+				<option value="artist_per_skipcount">- Most skipped artist</option>
+				<option value="artist_per_rating">- Best rated artist</option>
+				<option value="artist_per_score">- Best scored artist</option>
+
+				<option disabled="disabled">&nbsp;</option>		
+				<option disabled="disabled">Albums</option>
+				<option value="album_per_playcount">- Most played album</option>	
+
+				<option disabled="disabled">&nbsp;</option>	
+				<option disabled="disabled">Genre</option>
+				<option value="genre_per_playcount">- Most played genre</option>
+				<option value="artist_per_genre">- Amount of artists per genre</option>
+				<option value="track_per_genre">- Amount of tracks per genre</option>
+			</select>
+			<input type="Submit" Name="Submit1" value="Load">
 
 			<?php
 				echo '<div id="header_info">';
-
 					$now = date("Ymd G:i:s");
-
 					echo '<table>';
 						echo '<tr>';
 							echo '<td><b>version:</b></td>';
@@ -127,10 +127,9 @@
 		<!-- #header-->
 
 
-
 		<!-- #content-->
 		<div id="content">
-			<h3>base-informations</h3>
+			<h3>basics</h3>
 				<?php 											
 					// sqlite stuff - access clementine db file
 					class MyDB2 extends SQLite3
@@ -144,12 +143,12 @@
 					$db2 = new MyDB2();
 										 
 					// Show: TRACKS
-					$result5 = $db2->query('SELECT COUNT(*) FROM songs');
+					$result5 = $db2->query('SELECT COUNT(*) FROM songs WHERE unavailable !="1"');
 					while ($row5 = $result5->fetchArray()) 
 					{
 						$tracks_all = $row5[0];	
 					} 				 	
-											
+
 					// Show: PLAYED
 					$result6 = $db2->query('SELECT COUNT(*) FROM songs WHERE lastplayed <> "-1" and unavailable !="1"');
 					while ($row6 = $result6->fetchArray()) 
@@ -202,12 +201,9 @@
 						echo "</tr>";
 					echo "</table>";	
 				?>
-		
 	</form>
 </body>
 </html>
-
-
 
 <?php
 	//
@@ -241,126 +237,123 @@
 				$cols = 6;
 				$tableColumns = "<th>No.</th><th>Artist.</th><th>Album</th><th>Title</th><th>Genre</th><th>Year</th>";
 				$othersFactor = 0.05;
-				$queryDescription = "Shows the amount of tracks per genre.";
+				$queryDescription = "Shows all tracks";
 			break;
 
 			// TRACKS
 			case "track_per_genre":
-				$graph_title = "Tracks per Genre";
+				$graph_title = "Amout of tracks per Genre";
 				$sql_statement = "SELECT distinct genre, COUNT(*) FROM songs WHERE unavailable != '1' GROUP BY genre ORDER by COUNT(*) DESC";
 				$cols = 3;
 				$tableColumns = "<th>No.</th><th>Genre</th><th>Tracks</th>";
-				$othersFactor = 0.05;
-				$queryDescription = "Shows the amount of tracks per genre.";
+				$queryDescription = "Shows the amount of tracks per genre";
 			break;
 							
 			case "track_per_artist":
-				$graph_title = "Tracks per Artist";
+				$graph_title = "Artist with most tracks";
 				$sql_statement = "SELECT distinct artist, COUNT(*) FROM songs WHERE unavailable != '1' and artist!='Various Artists' GROUP BY artist ORDER by COUNT(*) DESC";
 				$cols = 3;
 				$tableColumns = "<th>No.</th><th>Artist</th><th>Tracks</th>";
-				$othersFactor = 0.05;
-				$queryDescription = "Shows the amount of tracks per artist.";
+				$queryDescription = "Shows the amount of tracks per artist";
 			break;
 							
 			case "track_per_lastplayed":
-				$graph_title = "Tracks per Artist";
-				$sql_statement = "SELECT title, artist, lastplayed FROM songs WHERE unavailable != '1' ORDER by lastplayed DESC LIMIT 500";
+				$graph_title = "Playhistory";
+				$sql_statement = "SELECT title, artist, album, lastplayed FROM songs WHERE unavailable != '1' ORDER by lastplayed DESC LIMIT 500";
 				$cols = y;
-				$tableColumns = "<th>No.</th><th>Track</th><th>Artist</th><th>Lastplayed</th>";
-				$othersFactor = 0.05;
-				$queryDescription = "Shows the amount of tracks per playcount.";
+				$tableColumns = "<th>No.</th><th>Track</th><th>Artist</th><th>Album</th><th>Lastplayed</th>";
+				$queryDescription = "Shows your playhistory based on lastplayed";
 			break;
 							
 			case "track_per_playcount":
-				$graph_title = "Tracks per playcount";
+				$graph_title = "Most played trackss";
 				$sql_statement = "SELECT distinct title, artist, sum(playcount) FROM songs WHERE playcount > 0 and title != '' and unavailable != '1' GROUP BY title ORDER BY sum(playcount) desc ";
 				$cols = 4;
 				$tableColumns = "<th>No.</th><th>Track</th><th>Artist</th><th>Playcount</th>";
-				$othersFactor = 0.1;
+				$queryDescription = "Shows the most listened tracks based on playcount";
 			break;
 													
 			case "track_per_skipcount":
-				$graph_title = "Tracks per Artist";
+				$graph_title = "Most skipped tracks";
 				$sql_statement = "SELECT title, artist , skipcount FROM songs WHERE skipcount > 0 and unavailable != '1' ORDER by skipcount DESC";
 				$cols = 4;
 				$tableColumns = "<th>No.</th><th>Track</th><th>Artist</th><th>Skipcount</th>";
-				$othersFactor = 0.05;
+				$queryDescription = "Shows the most skipped tracks based on skipcount";
 			break;
 							
 			case "track_per_rating":
-				$graph_title = "Tracks per rating";
+				$graph_title = "Best rated tracks";
 				$sql_statement = "SELECT title, rating, artist FROM songs WHERE rating > -1 and unavailable != '1' ORDER BY rating DESC";
 				$cols = 4;
 				$tableColumns = "<th>No.</th><th>Track</th><th>Rating</th><th>Artist</th>";
-				$othersFactor = 0.05;
+				$queryDescription = "Shows the best rated tracks based on rating";
 			break;
 															
 			case "track_per_score":
-				$graph_title = "Tracks per Score";
+				$graph_title = "Best scored tracks";
 				$sql_statement = "SELECT title, score, artist FROM songs WHERE score > 0 and unavailable != '1' ORDER BY score DESC";
 				$cols = 4;
 				$tableColumns = "<th>No.</th><th>Track</th><th>Score</th><th>Artist</th>";
-				$othersFactor = 0.05;
+				$queryDescription = "Shows the best scored tracks based on scoring";
 			break;
 										
 			// ARTISTS
 			case "artist_per_genre":
-				$graph_title = "Artists per Genre";
+				$graph_title = "Amount of artists per Genre";
 				$sql_statement = "SELECT distinct genre, COUNT(distinct artist) FROM songs WHERE unavailable != '1' GROUP BY genre ORDER by COUNT(artist) DESC";
 				$cols = 3;
 				$tableColumns = "<th>No.</th><th>Genre</th><th>Artists</th>";
-				$othersFactor = 0.05;
+				$queryDescription = "Shows the artists with the most tracks";
 			break;
 							
 			case "artist_per_playcount":	
-				$graph_title = "Artist per playcount";
+				$graph_title = "Most played artists";
 				$sql_statement = "SELECT distinct artist, sum(playcount) FROM songs WHERE playcount > 0 and unavailable != '1' GROUP BY artist ORDER BY sum(playcount) desc";
 				$cols = 3;
 				$tableColumns = "<th>No.</th><th>Artist</th><th>Overall Playcount</th>";
-				$othersFactor = 0.05;
+				$queryDescription = "Shows the most played artists based on playcount";
 			break;
 										
 			case "artist_per_skipcount":	
-				$graph_title = "Artist per skipcount";
+				$graph_title = "Mosed skipped artists";
 				$sql_statement = "SELECT distinct artist, sum(skipcount) FROM songs WHERE skipcount > 0 and unavailable != '1' GROUP BY artist ORDER BY sum(skipcount) desc";
 				$cols = 3;
 				$tableColumns = "<th>No.</th><th>Artist</th><th>Overall Skipcount</th>";
-				$othersFactor = 0.05;
+				$queryDescription = "Shows the most skipped artists based on skipcount";
 			break;
 										
 			case "artist_per_score":
-				$graph_title = "Artist per score";
+				$graph_title = "Best scored artists";
 				$sql_statement = "SELECT distinct artist, count(*), sum(score)/count(*), sum(score) FROM songs WHERE score > 0 and unavailable != '1' GROUP BY artist HAVING count(*) > 9 ORDER BY sum(score)/count(*) desc";
 				$cols = 5;
 				$tableColumns = "<th>No.</th><th>Artist</th><th>Scored Tracks</th><th>Average Score</th><th>Overall Score</th>";
-				$othersFactor = 0.05;
+				$queryDescription = "Shows the best scored artists based on score";
 			break;
 
 			case "artist_per_rating":
-				$graph_title = "Artist per rating";
+				$graph_title = "Best rated artists";
 				$sql_statement = "SELECT distinct artist, count(*), sum(rating)/count(*), sum(rating) FROM songs WHERE rating > 0  and unavailable != '1' GROUP BY artist ORDER BY sum(rating)/count(*) desc";
 				$cols = 5;
 				$tableColumns = "<th>No.</th><th>Artist</th><th>Rated Tracks</th><th>Average Rating</th><th>Overall Rating</th>";
-				$othersFactor = 0.05;
+				$queryDescription = "Shows the best rated artists based on rating";
 			break;
 										
 			// ALBUM
 			case "album_per_playcount":
-				$graph_title = "Album per playcount";
+				$graph_title = "Most played albums";
 				$sql_statement = "SELECT distinct album, sum(playcount), artist FROM songs WHERE playcount > 0 and unavailable != '1' GROUP BY album ORDER BY sum(playcount) desc ";
 				$cols = 4;
 				$tableColumns = "<th>No.</th><th>Album</th><th>Playcount</th><th>Artist</th>";
-				$othersFactor = 0.06;
+				$queryDescription = "Shows the most played albums based on playcount";
 			break;								
 							
 			// GENRE
 			case "genre_per_playcount":
-				$graph_title = "Genre per playcount";
+				$graph_title = "Most played genre";
 				$sql_statement = "SELECT distinct genre, sum(playcount), count(*) FROM songs WHERE playcount > 0 and unavailable != '1' GROUP BY genre ORDER BY sum(playcount) desc ";
 				$cols = 4;
 				$tableColumns = "<th>No.</th><th>Genre</th><th>Overall Playcount</th><th>Played tracks</th>";
-				$othersFactor = 0.02;
+				$queryDescription = "Shows the most played genre based on playcount";
 			break;
 																						
 			// SPECIAL-CASE ;)
@@ -371,12 +364,11 @@
 		}
 		// endswitch case
 												
-		
 		// do query & output
 		if($sql_statement != "")
 		{
-			echo "<h3>selection</h3>";
-			echo '<b>Selected:</b> '.$graph_title.'  ('.$queryDescription.').';
+			echo "<h3>".$graph_title."</h3>";
+			echo '<b>What: </b>'.$queryDescription.'.';
 			echo '<br><b>Query:</b> '.$sql_statement.'.<br><br>';
 			$result = $db->query($sql_statement);	// run sql query
 			echo '<table cellpadding="0" cellspacing="0" border="0" class="display" id="example">';
@@ -405,11 +397,17 @@
 					break;
 
 					case "y":	
+						// lastplayed: converting epoche time to human-readable timestamp
+						$epochetimestamp = $row[3];
+						$epochetimestamp = $epochetimestamp +7200; // +2 hours time-correction
+						$humanTimestamp = gmdate('Ymd H:i:s', $epochetimestamp);
+
 						echo "<tr class='odd gradeU'>";
 							echo "<td>".$hits."</td>";
 							echo "<td>".$row[0]."</td>";
 							echo "<td>".$row[1]."</td>";
-							echo "<td>".gmdate('r', $row[2])."</td>";
+							echo "<td>".$row[2]."</td>";
+							echo "<td>".$humanTimestamp."</td>";
 						echo "</tr>";
 					break;
 										
@@ -472,7 +470,6 @@
 						echo '<th><input type="text" name="search_platform" value="Search" class="search_init" /></th>';
 					break;
 			}
-	
 			echo '</tr>';
 			echo '</tfoot>';
 			echo '<table>';
