@@ -129,77 +129,98 @@
 
 		<!-- #content-->
 		<div id="content">
+
+			<noscript>
+				<h3>Warning</h3>
+				<font color="red">Your browser does not support JavaScript - which is needed for clemStats. Please enable it and then reload this page.</font><br>
+				<img src="img/noscript.gif" alt="image description">
+			</noscript> 
+
+
 			<h3>basics</h3>
-				<?php 											
-					// sqlite stuff - access clementine db file
-					class MyDB2 extends SQLite3
+				<?php 
+					//
+					// Check if db file is valid
+					//	
+					if (file_exists($dbpath)) 
 					{
-						function __construct()
+    					echo "<b>Database: </b>".$dbpath;
+
+    					// sqlite stuff - access clementine db file
+						class MyDB2 extends SQLite3
 						{
-							$this->open('/home/fidel/.config/Clementine/clementine.db');
-						}	
-					}
+							function __construct()
+							{
+								$this->open('/home/fidel/.config/Clementine/clementine.db');
+							}	
+						}
 
-					$db2 = new MyDB2();
-										 
-					// Show: TRACKS
-					$result5 = $db2->query('SELECT COUNT(*) FROM songs WHERE unavailable !="1"');
-					while ($row5 = $result5->fetchArray()) 
-					{
-						$tracks_all = $row5[0];	
-					} 				 	
+						$db2 = new MyDB2();
+											 
+						// Show: TRACKS
+						$result5 = $db2->query('SELECT COUNT(*) FROM songs WHERE unavailable !="1"');
+						while ($row5 = $result5->fetchArray()) 
+						{
+							$tracks_all = $row5[0];	
+						} 				 	
 
-					// Show: PLAYED
-					$result6 = $db2->query('SELECT COUNT(*) FROM songs WHERE lastplayed <> "-1" and unavailable !="1"');
-					while ($row6 = $result6->fetchArray()) 
-					{
-						$tracks_played = $row6[0];
-						$tracks_played_ratio =  ($tracks_played/$tracks_all)*100;	
+						// Show: PLAYED
+						$result6 = $db2->query('SELECT COUNT(*) FROM songs WHERE lastplayed <> "-1" and unavailable !="1"');
+						while ($row6 = $result6->fetchArray()) 
+						{
+							$tracks_played = $row6[0];
+							$tracks_played_ratio =  ($tracks_played/$tracks_all)*100;	
+						} 
+													
+						// Show: ARTISTS
+						$result4 = $db2->query('SELECT COUNT(DISTINCT artist) FROM songs WHERE unavailable !="1"');
+						while ($row4 = $result4->fetchArray()) 
+						{
+							$overall_artists = $row4[0];		
+						}
+
+						// Show: ALBUMS
+						$result3 = $db2->query('SELECT COUNT(DISTINCT album) FROM songs WHERE unavailable !="1"');
+						while ($row3 = $result3->fetchArray()) 
+						{
+							$overall_albums = $row3[0];		
+						}
+
+						// Show: GENRES
+						$result2 = $db2->query('SELECT COUNT(DISTINCT genre) FROM songs WHERE unavailable !="1"');
+						while ($row2 = $result2->fetchArray()) 
+						{
+							$overall_genres = $row2[0];		
+						} 
+
+						//
+						// Draw basic table
+						//
+						echo "<table width='50%' align='right'>";
+							echo "<tr>";
+								echo "<th>&nbsp;</th>";
+								echo "<th bgcolor='orange'>Tracks</th>";
+								echo "<th bgcolor='orange'>Artists</th>";
+								echo "<th bgcolor='orange'>Albums</th>";
+								echo "<th bgcolor='orange'>Genres</th>";
+							echo "</tr>";
+							echo "<tr>";
+								echo "<th bgcolor='orange'>Overall</th>";
+								echo "<td><center>".$tracks_all." (100%)</center></td>";
+								echo "<td><center>".$overall_artists."</center></td>";
+								echo "<td><center>".$overall_albums."</center></td>";
+								echo "<td><center>".$overall_genres."</center></td>";
+							echo "</tr>";
+							echo "<tr>";
+								echo "<th bgcolor='orange'>Played</th>";
+								echo "<td><center>".$tracks_played." &nbsp;(".round($tracks_played_ratio, 2)."%)</center></td>";
+							echo "</tr>";
+						echo "</table>";	
 					} 
-												
-					// Show: ARTISTS
-					$result4 = $db2->query('SELECT COUNT(DISTINCT artist) FROM songs WHERE unavailable !="1"');
-					while ($row4 = $result4->fetchArray()) 
+					else 
 					{
-						$overall_artists = $row4[0];		
+						echo "<b>Database: </b> <font color='red'>invalid</font>";
 					}
-
-					// Show: ALBUMS
-					$result3 = $db2->query('SELECT COUNT(DISTINCT album) FROM songs WHERE unavailable !="1"');
-					while ($row3 = $result3->fetchArray()) 
-					{
-						$overall_albums = $row3[0];		
-					}
-
-					// Show: GENRES
-					$result2 = $db2->query('SELECT COUNT(DISTINCT genre) FROM songs WHERE unavailable !="1"');
-					while ($row2 = $result2->fetchArray()) 
-					{
-						$overall_genres = $row2[0];		
-					} 
-											
-					echo "<b>Database: </b>".$dbpath;
-
-					echo "<table width='50%' align='right'>";
-						echo "<tr>";
-							echo "<th>&nbsp;</th>";
-							echo "<th bgcolor='orange'>Tracks</th>";
-							echo "<th bgcolor='orange'>Artists</th>";
-							echo "<th bgcolor='orange'>Albums</th>";
-							echo "<th bgcolor='orange'>Genres</th>";
-						echo "</tr>";
-						echo "<tr>";
-							echo "<th bgcolor='orange'>Overall</th>";
-							echo "<td><center>".$tracks_all." (100%)</center></td>";
-							echo "<td><center>".$overall_artists."</center></td>";
-							echo "<td><center>".$overall_albums."</center></td>";
-							echo "<td><center>".$overall_genres."</center></td>";
-						echo "</tr>";
-						echo "<tr>";
-							echo "<th bgcolor='orange'>Played</th>";
-							echo "<td><center>".$tracks_played." &nbsp;(".round($tracks_played_ratio, 2)."%)</center></td>";
-						echo "</tr>";
-					echo "</table>";	
 				?>
 	</form>
 </body>
@@ -260,7 +281,7 @@
 			case "track_per_lastplayed":
 				$graph_title = "Playhistory";
 				$sql_statement = "SELECT title, artist, album, lastplayed FROM songs WHERE unavailable != '1' ORDER by lastplayed DESC LIMIT 500";
-				$cols = y;
+				$cols = 'y';
 				$tableColumns = "<th>No.</th><th>Track</th><th>Artist</th><th>Album</th><th>Lastplayed</th>";
 				$queryDescription = "Shows your playhistory based on lastplayed";
 			break;
