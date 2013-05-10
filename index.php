@@ -33,6 +33,29 @@
 	{
         document.getElementById('graph1').style.display = "none";
 	}
+
+	function dbOptions()
+	{
+		var r=confirm("dummy: Do you want to backup your Clementine database?");
+		if (r==true)
+		{
+			/*
+		  	srcFile = '/home/fidel/.config/Clementine/clementine_clemStats.db';     
+			destFile = '/home/fidel/.config/Clementine/clementine.db';
+
+			var copyFileSync = function(srcFile, destFile, encoding) {
+  			var content = fs.readFileSync(srcFile, encoding);
+  				fs.writeFileSync(destFile, content, encoding);
+			}
+
+			alert("Dummy - Backup done.");
+			*/
+		}
+		else
+		{
+		  // "You pressed Cancel!";
+		} 
+	}
 	</script>
 
 
@@ -87,124 +110,26 @@
 
 		<!-- #header-->
 		<header id="header">
-			<a href="index.php"><img src="img/icon_large_rotated.png" align="left" height="90pt"></a>
+			<a href="index.php"><img src="img/icon_large_rotated.png" align="left" height="80pt" style="padding-top:10px;"></a>
 			<h1><a href="index.php"><?php  echo $appname; ?></a></h1>
 			<h2><?php  echo $tagline; ?></h2>
-			<!--
-			<select name="dropdown" value="options" >
-				<option disabled selected>Choose..</option>	
-
-				<option disabled="disabled">&nbsp;</option>
-				<option disabled="disabled">Tracks</option>
-				<option value="track_per_lastplayed">- Play history</option>
-				<option value="track_per_playcount">- Most played tracks</option>
-				<option value="track_per_skipcount">- Most skipped tracks</option>
-				<option value="track_per_rating">- Best rated tracks</option>
-				<option value="track_per_score">- Best scored tracks</option>
-				<option value="all_tracks">- All tracks (experimental - slow)</option>
-
-				<option disabled="disabled">&nbsp;</option>		
-				<option disabled="disabled">Artist</option>
-				<option value="track_per_artist">- Artist with most tracks</option>
-				<option value="artist_per_playcount">- Most played artist</option>
-				<option value="artist_per_skipcount">- Most skipped artist</option>
-				<option value="artist_per_rating">- Best rated artist</option>
-				<option value="artist_per_score">- Best scored artist</option>
-
-				<option disabled="disabled">&nbsp;</option>		
-				<option disabled="disabled">Albums</option>
-				<option value="album_per_playcount">- Most played album</option>	
-
-				<option disabled="disabled">&nbsp;</option>	
-				<option disabled="disabled">Genre</option>
-				<option value="genre_per_playcount">- Most played genre</option>
-				<option value="artist_per_genre">- Amount of artists per genre</option>
-				<option value="track_per_genre">- Amount of tracks per genre</option>
-			</select>
-			-->
-
-			<select name="dropdown" value="options" onchange="doPost();">
-				<option disabled selected>Tracks</option>	
-				<option value="track_per_lastplayed">- Play history</option>
-				<option value="track_per_playcount">- Most played tracks</option>
-				<option value="track_per_skipcount">- Most skipped tracks</option>
-				<option value="track_per_rating">- Best rated tracks</option>
-				<option value="track_per_score">- Best scored tracks</option>
-				<option value="all_tracks">- All tracks (experimental)</option>
-			</select>
-
-			<select name="dropdown" value="options" onchange="doPost();">
-				<option disabled selected>Artists</option>			
-				<option value="track_per_artist">- Artist with most tracks</option>
-				<option value="artist_per_playcount">- Most played artist</option>
-				<option value="artist_per_skipcount">- Most skipped artist</option>
-				<option value="artist_per_rating">- Best rated artist</option>
-				<option value="artist_per_score">- Best scored artist</option>
-			</select>
-
-			<select name="dropdown" value="options" onchange="doPost();">
-				<option disabled selected>Albums</option>	
-				<option value="album_per_playcount">- Most played album</option>	
-			</select>
-
-			<select name="dropdown" value="options" onchange="doPost();">
-				<option disabled selected>Genre</option>	
-				<option value="genre_per_playcount">- Most played genre</option>
-				<option value="artist_per_genre">- Amount of artists per genre</option>
-				<option value="track_per_genre">- Amount of tracks per genre</option>
-			</select>
-
-			<input hidden type="Submit" Name="Submit1" value="Load">
 
 			<?php
 				echo '<div id="header_info">';
-					$now = date("Ymd G:i:s");
-					echo '<table>';
-						echo '<tr>';
-							echo '<td><b>version:</b></td>';
-							echo '<td>'.$version.'</td>';
-						echo '</tr>';
-						echo '<tr>';
-							echo '<td><b>links:</b></td>';
-							echo "<td><a href='https://github.com/macfidelity/clemStats/wiki'>Wiki</a>&nbsp;|&nbsp;<a href='https://github.com/macfidelity/clemStats/issues'>Issues</a></td>";
-						echo '</tr>';
-						echo '<tr>';
-							echo '<td><b>Loadtime:</b></td>';
-							echo "<td>".$now."</td>";
-						echo '</tr>';
-					echo '</table>';
-				echo "</div>";	
-			?>
-		</header>
-		<!-- #header-->
+					$now = date("Ymd G:i");
+					echo "<b>version:</b>&nbsp;".$version."&nbsp;|&nbsp;<a href='https://github.com/macfidelity/clemStats/wiki'>Wiki</a>&nbsp;|&nbsp;<a href='https://github.com/macfidelity/clemStats/issues'>Issues</a>&nbsp;|&nbsp;Page generated at:".$now;
+				
 
-
-		<!-- #content-->
-		<div id="content">
-
-			<noscript>
-				<h3>Warning</h3>
-				<font color="red">Your browser does not support JavaScript - which is needed for clemStats. Please enable it and then reload this page.</font><br>
-				<img src="img/noscript.gif" alt="image description">
-			</noscript> 
-
-				<br>
-
-			
-				<?php 
-					//
-					// Check if db file is valid
-					//	
+					// insert old basic table here
 					if (file_exists($dbpath)) 
 					{
-    					echo "<b>Database: </b>".$dbpath;
-
-    					// sqlite stuff - access clementine db file
+						// sqlite stuff - access clementine db file
 						class MyDB2 extends SQLite3
 						{
 							function __construct()
 							{
-								$this->open('/home/fidel/.config/Clementine/clementine.db');
+								include "conf/settings.php";
+								$this->open($dbpath);
 							}	
 						}
 
@@ -246,6 +171,168 @@
 							$overall_genres = $row2[0];		
 						} 
 
+						// Show: PLAYTIME
+						$result7 = $db2->query('SELECT SUM(length) FROM songs WHERE unavailable !="1"');
+						while ($row7 = $result7->fetchArray()) 
+						{
+							$tracks_playtime = $row7[0] / 60 / 60 /24 /1000000000;
+							$tracks_playtime = round($tracks_playtime, 2);
+						} 
+
+					}
+
+
+
+
+
+
+			?>
+
+
+
+			<table border="0" >
+				<tr>
+					<td>
+						<select name="dropdown" value="options" onchange="doPost();">
+							<option disabled selected>Tracks <?php echo "(".$tracks_all.")"; ?></option>	
+							<option value="track_per_lastplayed">- Play history</option>
+							<option value="track_per_playcount">- Most played tracks</option>
+							<option value="track_per_skipcount">- Most skipped tracks</option>
+							<option value="track_per_rating">- Best rated tracks</option>
+							<option value="track_per_score">- Best scored tracks</option>
+							<option value="all_tracks">- All tracks (slow)</option>
+						</select>
+					</td>
+
+					<td>
+						<select name="dropdown" value="options" onchange="doPost();">
+							<option disabled selected>Artists <?php echo "(".$overall_artists.")"; ?></option>			
+							<option value="track_per_artist">- Artist with most tracks</option>
+							<option value="artist_per_playcount">- Most played artist</option>
+							<option value="artist_per_skipcount">- Most skipped artist</option>
+							<option value="artist_per_rating">- Best rated artist</option>
+							<option value="artist_per_score">- Best scored artist</option>
+						</select>
+					</td>
+
+					<td>
+						<select name="dropdown" value="options" onchange="doPost();">
+							<option disabled selected>Albums <?php echo "(".$overall_albums.")"; ?></option>	
+							<option value="album_per_playcount">- Most played album</option>	
+						</select>
+					</td>
+
+					<td>
+						<select name="dropdown" value="options" onchange="doPost();">
+							<option disabled selected>Genre <?php echo "(".$overall_genres.")"; ?></option>	
+							<option value="genre_per_playcount">- Most played genre</option>
+							<option value="artist_per_genre">- Artists per genre</option>
+							<option value="track_per_genre">- Tracks per genre</option>
+						</select>
+					</td>
+
+				
+					<td>
+						<input hidden type="Submit" Name="Submit1" value="Load">
+					</td>
+				</tr>
+
+				<tr>
+					<td colspan="2">Tracks played: <?php echo $tracks_played." ".round($tracks_played_ratio, 2)."%"; ?></td>
+				</tr>
+
+				<tr>
+					<td colspan="2">Theoretical collection playtime: <?php echo $tracks_playtime." days"; ?></td>
+				</tr>
+			</table>
+		</div>
+		
+		</header>
+		<!-- #header-->
+
+
+		<!-- #content-->
+		<div id="content">
+
+			<noscript>
+				<h3>Warning</h3>
+				<font color="red">Your browser does not support JavaScript - which is needed for clemStats. Please enable it and then reload this page.</font><br>
+				<img src="img/noscript.gif" alt="image description">
+			</noscript> 
+
+				<br>
+
+			
+				<?php 
+					//
+					// Check if db file is valid
+					//	
+					if (file_exists($dbpath)) 
+					{
+
+						// echo "<img src='img/database_good.png' width='32' alt='db_icon' title='Database: $dbpath'>";
+						echo "<a href='javascript:void(0);'' onclick='dbOptions()'>";
+						echo "<img src='img/database_good.png' width='32' alt='db_icon' title='Database: $dbpath' align='right'>";
+						echo "</a>";
+    					//echo "&nbsp;<b>Database: </b>".$dbpath;
+
+						/*
+    					// sqlite stuff - access clementine db file
+						class MyDB2 extends SQLite3
+						{
+							function __construct()
+							{
+								include "conf/settings.php";
+								$this->open($dbpath);
+							}	
+						}
+
+						$db2 = new MyDB2();
+											 
+						// Show: TRACKS
+						$result5 = $db2->query('SELECT COUNT(*) FROM songs WHERE unavailable !="1"');
+						while ($row5 = $result5->fetchArray()) 
+						{
+							$tracks_all = $row5[0];	
+						} 				 	
+
+						// Show: PLAYED
+						$result6 = $db2->query('SELECT COUNT(*) FROM songs WHERE lastplayed <> "-1" and unavailable !="1"');
+						while ($row6 = $result6->fetchArray()) 
+						{
+							$tracks_played = $row6[0];
+							$tracks_played_ratio =  ($tracks_played/$tracks_all)*100;	
+						} 
+													
+						// Show: ARTISTS
+						$result4 = $db2->query('SELECT COUNT(DISTINCT artist) FROM songs WHERE unavailable !="1"');
+						while ($row4 = $result4->fetchArray()) 
+						{
+							$overall_artists = $row4[0];		
+						}
+
+						// Show: ALBUMS
+						$result3 = $db2->query('SELECT COUNT(DISTINCT album) FROM songs WHERE unavailable !="1"');
+						while ($row3 = $result3->fetchArray()) 
+						{
+							$overall_albums = $row3[0];		
+						}
+
+						// Show: GENRES
+						$result2 = $db2->query('SELECT COUNT(DISTINCT genre) FROM songs WHERE unavailable !="1"');
+						while ($row2 = $result2->fetchArray()) 
+						{
+							$overall_genres = $row2[0];		
+						} 
+
+						// Show: PLAYTIME
+						$result7 = $db2->query('SELECT SUM(length) FROM songs WHERE unavailable !="1"');
+						while ($row7 = $result7->fetchArray()) 
+						{
+							$tracks_playtime = $row7[0] / 60 / 60 /24 /1000000000;
+							$tracks_playtime = round($tracks_playtime, 2);
+						} 
+
 						//
 						// Draw basic table
 						//
@@ -256,6 +343,7 @@
 								echo "<th bgcolor='orange'>Artists</th>";
 								echo "<th bgcolor='orange'>Albums</th>";
 								echo "<th bgcolor='orange'>Genres</th>";
+								echo "<th bgcolor='orange'>Playtime</th>";
 							echo "</tr>";
 							echo "<tr>";
 								echo "<th bgcolor='orange'>Overall</th>";
@@ -263,16 +351,107 @@
 								echo "<td><center>".$overall_artists."</center></td>";
 								echo "<td><center>".$overall_albums."</center></td>";
 								echo "<td><center>".$overall_genres."</center></td>";
+								echo "<td><center>".$tracks_playtime." (days)</center></td>";
 							echo "</tr>";
 							echo "<tr>";
 								echo "<th bgcolor='orange'>Played</th>";
 								echo "<td><center>".$tracks_played." &nbsp;(".round($tracks_played_ratio, 2)."%)</center></td>";
 							echo "</tr>";
-						echo "</table>";	
+						echo "</table>";
+						*/
+
+
+						if (!extension_loaded('dbus')) 
+						{
+  							//die('Extension dbus is not loaded');
+  							echo "<b>Error:</b> dbus pecl extension is NOT loaded. It is not needed so far.";
+						}
+						else
+						{
+							//echo "<b>Notice:</b> dbus pecl extension is loaded.";
+
+							// basic clemdbus infos:
+							// http://wiki.clementine-player.googlecode.com/git/MPRIS.wiki
+
+							// get current track:
+							// terminal: qdbus org.mpris.clementine /Player org.freedesktop.MediaPlayer.GetMetadata
+							//
+							// play/pause:
+							// terminal: qdbus org.mpris.clementine /Player org.freedesktop.MediaPlayer.Pause
+							// terminal:
+
+							/*
+							$d = new Dbus( Dbus::BUS_SESSION, true );
+							$n = $d->createProxy(
+							"org.freedesktop.Notifications", // connection name
+							"/org/freedesktop/Notifications", // object
+							"org.freedesktop.Notifications" // interface
+							);
+							$id = $n->Notify(
+							'Testapp', new DBusUInt32( 0 ), // app_name, replaces_id
+							'iceweasel', 'Testing http://ez.no', 'Test Notification', // app_icon, summary, body
+							new DBusArray( DBus::STRING, array() ), // actions
+							new DBusDict( // hints
+							DBus::VARIANT,
+							array(
+							'x' => new DBusVariant( 500 ), // x position on screen
+							'y' => new DBusVariant( 500 ), // y position on screen
+							'desktop-entry' => new DBusVariant( 'rhythmbox' )
+							)
+							),
+							1000 // expire timeout in msec
+							);
+							echo $id[0], "\n";
+							*/
+
+
+
+
+							/*
+							$d = new Dbus;
+							$n = $d->createProxy(
+							"org.gnome.ScreenSaver",
+							"/org/gnome/ScreenSaver",
+							"org.gnome.ScreenSaver"
+							);
+							var_dump($n->GetActive());
+							$n->SetActive( true );
+							var_dump($n->GetActive());
+							sleep(5);
+							$n->SetActive( false );
+							*/
+
+
+
+
+
+							/*
+							$DBus = new Dbus( Dbus::BUS_SESSION );
+							$DBusProxy = $DBus->createProxy
+							    (
+							        "org.gnome.Shell", // connection name
+							        "/org/gnome/Shell", // object
+							        "org.gnome.Shell" // interface
+							    );
+							$DBusProxy->Screenshot("/tmp/test_php.jpg");
+
+
+
+
+							$DBus = new Dbus( Dbus::BUS_SESSION );
+							$DBusProxy = $DBus->createProxy
+							(
+							    "org.mpris.MediaPlayer2.clementine", // connection name
+							    "GetMetadata", // object
+							    "org.mpris.MediaPlayer2" // interface
+							);	
+							*/ 
+						}
 					} 
 					else 
 					{
-						echo "<b>Database: </b> <font color='red'>invalid</font>";
+						echo "<img src='img/database_bad.png' width='32' title='Database: $dbpath' align='right'>";
+						echo "&nbsp;<b>Database: </b> <font color='red'>invalid. Please check conf/settings.php</font>";
 					}
 				?>
 	</form>
@@ -390,7 +569,7 @@
 			break;
 										
 			case "artist_per_skipcount":	
-				$graph_title = "Mosed skipped artists";
+				$graph_title = "Most skipped artists";
 				$sql_statement = "SELECT distinct artist, sum(skipcount) FROM songs WHERE skipcount > 0 and unavailable != '1' GROUP BY artist ORDER BY sum(skipcount) desc";
 				$cols = 3;
 				$tableColumns = "<th>No.</th><th>Artist</th><th>Overall Skipcount</th>";
@@ -446,7 +625,7 @@
 		{
 			echo '<div id="graph1">';
 			echo '<h3>Graph</h3>';
-			echo '<canvas id="myChart" width="400" height="250"></canvas>';
+			echo '<canvas id="myChart" width="400" height="200"></canvas>';
 			echo '<input type="button" Name="hideButton" value="Hide Graph" onclick="doHide();">';
 			echo '</div>';
 		}
