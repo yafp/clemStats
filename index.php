@@ -17,17 +17,20 @@
 	<!--[if lte IE 6]><link rel="stylesheet" href="css/style_ie.css" type="text/css" media="screen, projection" /><![endif]-->
 	<style type="text/css" title="currentStyle">@import "css/table.css";</style>
 
+	<link rel="stylesheet" href="js/DataTables-1.9.4/extras/TableTools/media/css/TableTools.css" type="text/css" media="screen, projection" />
+
 	<!-- jquery, chart,js & datatable stuff -->
 	<script type="text/javascript" language="javascript" src="js/jquery/jquery-1.9.1-min.js"></script>
+	<script type="text/javascript" language="javascript" src="js/DataTables-1.9.4/media/js/jquery.dataTables.min.js"></script>
+	<script type="text/javascript" language="javascript" src="js/DataTables-1.9.4/extras/TableTools/media/js/ZeroClipboard.js"></script>
+	<script type="text/javascript" language="javascript" src="js/DataTables-1.9.4/extras/TableTools/media/js/TableTools.min.js"></script>
+
 	<script src="js/Chart.js_Regaddi/Chart.min_20130509.js"></script>
-
-
 	<script>
 	function doPost() 
 	{ 
 		form1.Submit1.click();
 	} 
-
 
 	function doHide()
 	{
@@ -58,14 +61,17 @@
 	}
 	</script>
 
-
-
-	<script type="text/javascript" language="javascript" src="js/jquery.dataTables.js"></script>
 	<script type="text/javascript" charset="utf-8">
 		var asInitVals = new Array();
 
 		$(document).ready(function() {
 			var oTable = $('#example').dataTable( {
+				"sDom": 'T<"clear">lfrtip',
+				"oTableTools": {
+					//"aButtons": [{"sExtends":    "collection","sButtonText": "Save", "aButtons":    [ "csv", "xls", "pdf" ]}],
+					"sSwfPath": "js/DataTables-1.9.4/extras/TableTools/media/swf/copy_csv_xls_pdf.swf"
+				},
+				
 				"bSortClasses": false, // should speed it up a little - TESTING
 				"aLengthMenu": [[10, 25, 50, 100, 500, -1], [10, 25, 50, 100, 500, "All"]],
 			    "iDisplayLength": 25,
@@ -119,7 +125,6 @@
 					$now = date("Ymd G:i");
 					echo "<b>version:</b>&nbsp;".$version."&nbsp;|&nbsp;<a href='https://github.com/macfidelity/clemStats/wiki'>Wiki</a>&nbsp;|&nbsp;<a href='https://github.com/macfidelity/clemStats/issues'>Issues</a>&nbsp;|&nbsp;Page generated at:".$now;
 				
-
 					// insert old basic table here
 					if (file_exists($dbpath)) 
 					{
@@ -178,17 +183,8 @@
 							$tracks_playtime = $row7[0] / 60 / 60 /24 /1000000000;
 							$tracks_playtime = round($tracks_playtime, 2);
 						} 
-
 					}
-
-
-
-
-
-
 			?>
-
-
 
 			<table border="0" >
 				<tr>
@@ -200,6 +196,7 @@
 							<option value="track_per_skipcount">- Most skipped track</option>
 							<option value="track_per_rating">- Best rated track</option>
 							<option value="track_per_score">- Best scored track</option>
+							<option value="track_per_year">- Tracks per year</option>
 							<option value="all_tracks">- All tracks (slow)</option>
 						</select>
 					</td>
@@ -219,7 +216,8 @@
 						<select name="dropdown" value="options" onchange="doPost();">
 							<option disabled selected>Albums <?php echo "(".$overall_albums.")"; ?></option>	
 							<option value="album_per_playcount">- Most played album</option>
-							<option value="album_per_skipcount">- Most skipped album</option>	
+							<option value="album_per_skipcount">- Most skipped album</option>
+							<option value="album_per_year">- Album per year</option>	
 						</select>
 					</td>
 
@@ -233,19 +231,11 @@
 						</select>
 					</td>
 
-				
-					<td>
-						<input hidden type="Submit" Name="Submit1" value="Load">
-					</td>
+					<td><input hidden type="Submit" Name="Submit1" value="Load"></td>
 				</tr>
 
-				<tr>
-					<td colspan="2">Tracks played: <?php echo $tracks_played." ".round($tracks_played_ratio, 2)."%"; ?></td>
-				</tr>
-
-				<tr>
-					<td colspan="2">Theoretical collection playtime: <?php echo $tracks_playtime." days"; ?></td>
-				</tr>
+				<tr><td colspan="2">Tracks played: <?php echo $tracks_played." ".round($tracks_played_ratio, 2)."%"; ?></td></tr>
+				<tr><td colspan="2">Theoretical collection playtime: <?php echo $tracks_playtime." days"; ?></td></tr>
 			</table>
 		</div>
 		
@@ -264,7 +254,6 @@
 
 				<br>
 
-			
 				<?php 
 					//
 					// Check if db file is valid
@@ -277,91 +266,6 @@
 						echo "<img src='img/database_good.png' width='32' alt='db_icon' title='Database: $dbpath' align='right'>";
 						echo "</a>";
     					//echo "&nbsp;<b>Database: </b>".$dbpath;
-
-						/*
-    					// sqlite stuff - access clementine db file
-						class MyDB2 extends SQLite3
-						{
-							function __construct()
-							{
-								include "conf/settings.php";
-								$this->open($dbpath);
-							}	
-						}
-
-						$db2 = new MyDB2();
-											 
-						// Show: TRACKS
-						$result5 = $db2->query('SELECT COUNT(*) FROM songs WHERE unavailable !="1"');
-						while ($row5 = $result5->fetchArray()) 
-						{
-							$tracks_all = $row5[0];	
-						} 				 	
-
-						// Show: PLAYED
-						$result6 = $db2->query('SELECT COUNT(*) FROM songs WHERE lastplayed <> "-1" and unavailable !="1"');
-						while ($row6 = $result6->fetchArray()) 
-						{
-							$tracks_played = $row6[0];
-							$tracks_played_ratio =  ($tracks_played/$tracks_all)*100;	
-						} 
-													
-						// Show: ARTISTS
-						$result4 = $db2->query('SELECT COUNT(DISTINCT artist) FROM songs WHERE unavailable !="1"');
-						while ($row4 = $result4->fetchArray()) 
-						{
-							$overall_artists = $row4[0];		
-						}
-
-						// Show: ALBUMS
-						$result3 = $db2->query('SELECT COUNT(DISTINCT album) FROM songs WHERE unavailable !="1"');
-						while ($row3 = $result3->fetchArray()) 
-						{
-							$overall_albums = $row3[0];		
-						}
-
-						// Show: GENRES
-						$result2 = $db2->query('SELECT COUNT(DISTINCT genre) FROM songs WHERE unavailable !="1"');
-						while ($row2 = $result2->fetchArray()) 
-						{
-							$overall_genres = $row2[0];		
-						} 
-
-						// Show: PLAYTIME
-						$result7 = $db2->query('SELECT SUM(length) FROM songs WHERE unavailable !="1"');
-						while ($row7 = $result7->fetchArray()) 
-						{
-							$tracks_playtime = $row7[0] / 60 / 60 /24 /1000000000;
-							$tracks_playtime = round($tracks_playtime, 2);
-						} 
-
-						//
-						// Draw basic table
-						//
-						echo "<table width='50%' align='right'>";
-							echo "<tr>";
-								echo "<th>&nbsp;</th>";
-								echo "<th bgcolor='orange'>Tracks</th>";
-								echo "<th bgcolor='orange'>Artists</th>";
-								echo "<th bgcolor='orange'>Albums</th>";
-								echo "<th bgcolor='orange'>Genres</th>";
-								echo "<th bgcolor='orange'>Playtime</th>";
-							echo "</tr>";
-							echo "<tr>";
-								echo "<th bgcolor='orange'>Overall</th>";
-								echo "<td><center>".$tracks_all." (100%)</center></td>";
-								echo "<td><center>".$overall_artists."</center></td>";
-								echo "<td><center>".$overall_albums."</center></td>";
-								echo "<td><center>".$overall_genres."</center></td>";
-								echo "<td><center>".$tracks_playtime." (days)</center></td>";
-							echo "</tr>";
-							echo "<tr>";
-								echo "<th bgcolor='orange'>Played</th>";
-								echo "<td><center>".$tracks_played." &nbsp;(".round($tracks_played_ratio, 2)."%)</center></td>";
-							echo "</tr>";
-						echo "</table>";
-						*/
-
 
 						if (!extension_loaded('dbus')) 
 						{
@@ -406,9 +310,6 @@
 							echo $id[0], "\n";
 							*/
 
-
-
-
 							/*
 							$d = new Dbus;
 							$n = $d->createProxy(
@@ -424,9 +325,6 @@
 							*/
 
 
-
-
-
 							/*
 							$DBus = new Dbus( Dbus::BUS_SESSION );
 							$DBusProxy = $DBus->createProxy
@@ -436,8 +334,6 @@
 							        "org.gnome.Shell" // interface
 							    );
 							$DBusProxy->Screenshot("/tmp/test_php.jpg");
-
-
 
 
 							$DBus = new Dbus( Dbus::BUS_SESSION );
@@ -459,6 +355,9 @@
 	</form>
 </body>
 </html>
+
+
+
 
 <?php
 	//
@@ -491,6 +390,7 @@
 				$sql_statement = "SELECT artist, album, title, genre, year FROM songs WHERE unavailable != '1' ORDER BY album";
 				$cols = 6;
 				$tableColumns = "<th>No.</th><th>Artist.</th><th>Album</th><th>Title</th><th>Genre</th><th>Year</th>";
+				$graph = false;
 			break;
 
 			// TRACKS
@@ -501,12 +401,21 @@
 				$tableColumns = "<th>No.</th><th>Genre</th><th>Tracks</th>";
 				$graph = true;
 			break;
-							
+
+			case "track_per_year":
+				$graph_title = "Tracks per Year";
+				$sql_statement = "SELECT distinct year, COUNT(*) FROM songs WHERE unavailable != '1' GROUP BY year ORDER by COUNT(*) DESC";
+				$cols = 3;
+				$tableColumns = "<th>No.</th><th>Year</th><th>Tracks</th>";
+				$graph = true;
+			break;
+				
 			case "track_per_artist":
 				$graph_title = "Artist with most tracks";
 				$sql_statement = "SELECT distinct artist, COUNT(*) FROM songs WHERE unavailable != '1' and artist!='Various Artists' GROUP BY artist ORDER by COUNT(*) DESC";
 				$cols = 3;
 				$tableColumns = "<th>No.</th><th>Artist</th><th>Tracks</th>";
+				$graph = false;
 			break;
 							
 			case "track_per_lastplayed":
@@ -514,6 +423,7 @@
 				$sql_statement = "SELECT title, artist, album, lastplayed FROM songs WHERE unavailable != '1' ORDER by lastplayed DESC LIMIT 500";
 				$cols = 'y';
 				$tableColumns = "<th>No.</th><th>Track</th><th>Artist</th><th>Album</th><th>Lastplayed</th>";
+				$graph = false;
 			break;
 							
 			case "track_per_playcount":
@@ -521,6 +431,7 @@
 				$sql_statement = "SELECT distinct title, artist, sum(playcount) FROM songs WHERE playcount > 0 and title != '' and unavailable != '1' GROUP BY title ORDER BY sum(playcount) desc ";
 				$cols = 4;
 				$tableColumns = "<th>No.</th><th>Track</th><th>Artist</th><th>Playcount</th>";
+				$graph = false;
 			break;
 													
 			case "track_per_skipcount":
@@ -528,6 +439,7 @@
 				$sql_statement = "SELECT title, artist , skipcount FROM songs WHERE skipcount > 0 and unavailable != '1' ORDER by skipcount DESC";
 				$cols = 4;
 				$tableColumns = "<th>No.</th><th>Track</th><th>Artist</th><th>Skipcount</th>";
+				$graph = false;
 			break;
 							
 			case "track_per_rating":
@@ -535,6 +447,7 @@
 				$sql_statement = "SELECT title, rating, artist FROM songs WHERE rating > -1 and unavailable != '1' ORDER BY rating DESC";
 				$cols = 4;
 				$tableColumns = "<th>No.</th><th>Track</th><th>Rating</th><th>Artist</th>";
+				$graph = false;
 			break;
 															
 			case "track_per_score":
@@ -542,6 +455,7 @@
 				$sql_statement = "SELECT title, score, artist FROM songs WHERE score > 0 and unavailable != '1' ORDER BY score DESC";
 				$cols = 4;
 				$tableColumns = "<th>No.</th><th>Track</th><th>Score</th><th>Artist</th>";
+				$graph = false;
 			break;
 										
 			// ARTISTS
@@ -558,6 +472,7 @@
 				$sql_statement = "SELECT distinct artist, sum(playcount) FROM songs WHERE playcount > 0 and unavailable != '1' GROUP BY artist ORDER BY sum(playcount) desc";
 				$cols = 3;
 				$tableColumns = "<th>No.</th><th>Artist</th><th>Overall Playcount</th>";
+				$graph = false;
 			break;
 										
 			case "artist_per_skipcount":	
@@ -565,6 +480,7 @@
 				$sql_statement = "SELECT distinct artist, sum(skipcount) FROM songs WHERE skipcount > 0 and unavailable != '1' GROUP BY artist ORDER BY sum(skipcount) desc";
 				$cols = 3;
 				$tableColumns = "<th>No.</th><th>Artist</th><th>Overall Skipcount</th>";
+				$graph = false;
 			break;
 										
 			case "artist_per_score":
@@ -572,6 +488,7 @@
 				$sql_statement = "SELECT distinct artist, count(*), sum(score)/count(*), sum(score) FROM songs WHERE score > 0 and unavailable != '1' GROUP BY artist HAVING count(*) > 9 ORDER BY sum(score)/count(*) desc";
 				$cols = 5;
 				$tableColumns = "<th>No.</th><th>Artist</th><th>Scored Tracks</th><th>Average Score</th><th>Overall Score</th>";
+				$graph = false;
 			break;
 
 			case "artist_per_rating":
@@ -579,6 +496,7 @@
 				$sql_statement = "SELECT distinct artist, count(*), sum(rating)/count(*), sum(rating) FROM songs WHERE rating > 0  and unavailable != '1' GROUP BY artist ORDER BY sum(rating)/count(*) desc";
 				$cols = 5;
 				$tableColumns = "<th>No.</th><th>Artist</th><th>Rated Tracks</th><th>Average Rating</th><th>Overall Rating</th>";
+				$graph = false;
 			break;
 										
 			// ALBUM
@@ -587,6 +505,15 @@
 				$sql_statement = "SELECT distinct album, sum(playcount), artist FROM songs WHERE playcount > 0 and unavailable != '1'  and album!='' GROUP BY album ORDER BY sum(playcount) desc ";
 				$cols = 4;
 				$tableColumns = "<th>No.</th><th>Album</th><th>Playcount</th><th>Artist</th>";
+				$graph = false;
+			break;
+
+			case "album_per_year":
+				$graph_title = "Albums per Year";
+				$sql_statement = "SELECT distinct year, COUNT(distinct album) FROM songs WHERE unavailable != '1' GROUP BY year ORDER by COUNT(distinct album) DESC";
+				$cols = 3;
+				$tableColumns = "<th>No.</th><th>Year</th><th>Albums</th>";
+				$graph = true;
 			break;
 
 			case "album_per_skipcount":	
@@ -594,6 +521,7 @@
 				$sql_statement = "SELECT distinct album, sum(skipcount), artist FROM songs WHERE skipcount > 0 and unavailable != '1'  and album!='' GROUP BY album ORDER BY sum(skipcount) desc";
 				$cols = 4;
 				$tableColumns = "<th>No.</th><th>Album</th><th>Overall Skipcount</th><th>Artist</th>";
+				$graph = false;
 			break;								
 							
 			// GENRE
@@ -617,6 +545,7 @@
 			case "";
 				$graph_title = "";
 				$sql_statement = "";
+				$graph = false;
 			break;
 		}
 		// endswitch case
@@ -650,8 +579,6 @@
 																							
 			while ($row = $result->fetchArray()) 
 			{
-				// TODO
-				//
 				// add data to array for graph
 				if($graph == true)
 				{
@@ -682,7 +609,7 @@
 				switch ($cols)
 				{
 					case "3":
-						if($selected_stats = "genre_per_playtime")
+						if($selected_stats == "genre_per_playtime")
 						{
 							echo "<tr class='odd gradeU'>";
 								echo "<td>".$hits."</td>";
