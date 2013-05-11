@@ -195,11 +195,11 @@
 					<td>
 						<select name="dropdown" value="options" onchange="doPost();">
 							<option disabled selected>Tracks <?php echo "(".$tracks_all.")"; ?></option>	
-							<option value="track_per_lastplayed">- Play history</option>
-							<option value="track_per_playcount">- Most played tracks</option>
-							<option value="track_per_skipcount">- Most skipped tracks</option>
-							<option value="track_per_rating">- Best rated tracks</option>
-							<option value="track_per_score">- Best scored tracks</option>
+							<option value="track_per_lastplayed">- Playlist</option>
+							<option value="track_per_playcount">- Most played track</option>
+							<option value="track_per_skipcount">- Most skipped track</option>
+							<option value="track_per_rating">- Best rated track</option>
+							<option value="track_per_score">- Best scored track</option>
 							<option value="all_tracks">- All tracks (slow)</option>
 						</select>
 					</td>
@@ -218,7 +218,8 @@
 					<td>
 						<select name="dropdown" value="options" onchange="doPost();">
 							<option disabled selected>Albums <?php echo "(".$overall_albums.")"; ?></option>	
-							<option value="album_per_playcount">- Most played album</option>	
+							<option value="album_per_playcount">- Most played album</option>
+							<option value="album_per_skipcount">- Most skipped album</option>	
 						</select>
 					</td>
 
@@ -228,6 +229,7 @@
 							<option value="genre_per_playcount">- Most played genre</option>
 							<option value="artist_per_genre">- Artists per genre</option>
 							<option value="track_per_genre">- Tracks per genre</option>
+							<option value="genre_per_playtime">- Available playtime per genre</option>
 						</select>
 					</td>
 
@@ -489,16 +491,14 @@
 				$sql_statement = "SELECT artist, album, title, genre, year FROM songs WHERE unavailable != '1' ORDER BY album";
 				$cols = 6;
 				$tableColumns = "<th>No.</th><th>Artist.</th><th>Album</th><th>Title</th><th>Genre</th><th>Year</th>";
-				$queryDescription = "Shows all tracks";
 			break;
 
 			// TRACKS
 			case "track_per_genre":
-				$graph_title = "Amout of tracks per Genre";
+				$graph_title = "Tracks per Genre";
 				$sql_statement = "SELECT distinct genre, COUNT(*) FROM songs WHERE unavailable != '1' GROUP BY genre ORDER by COUNT(*) DESC";
 				$cols = 3;
 				$tableColumns = "<th>No.</th><th>Genre</th><th>Tracks</th>";
-				$queryDescription = "Shows the amount of tracks per genre";
 				$graph = true;
 			break;
 							
@@ -507,98 +507,93 @@
 				$sql_statement = "SELECT distinct artist, COUNT(*) FROM songs WHERE unavailable != '1' and artist!='Various Artists' GROUP BY artist ORDER by COUNT(*) DESC";
 				$cols = 3;
 				$tableColumns = "<th>No.</th><th>Artist</th><th>Tracks</th>";
-				$queryDescription = "Shows the amount of tracks per artist";
 			break;
 							
 			case "track_per_lastplayed":
-				$graph_title = "Playhistory";
+				$graph_title = "Playlist";
 				$sql_statement = "SELECT title, artist, album, lastplayed FROM songs WHERE unavailable != '1' ORDER by lastplayed DESC LIMIT 500";
 				$cols = 'y';
 				$tableColumns = "<th>No.</th><th>Track</th><th>Artist</th><th>Album</th><th>Lastplayed</th>";
-				$queryDescription = "Shows your playhistory based on lastplayed";
 			break;
 							
 			case "track_per_playcount":
-				$graph_title = "Most played trackss";
+				$graph_title = "Most played track";
 				$sql_statement = "SELECT distinct title, artist, sum(playcount) FROM songs WHERE playcount > 0 and title != '' and unavailable != '1' GROUP BY title ORDER BY sum(playcount) desc ";
 				$cols = 4;
 				$tableColumns = "<th>No.</th><th>Track</th><th>Artist</th><th>Playcount</th>";
-				$queryDescription = "Shows the most listened tracks based on playcount";
 			break;
 													
 			case "track_per_skipcount":
-				$graph_title = "Most skipped tracks";
+				$graph_title = "Most skipped track";
 				$sql_statement = "SELECT title, artist , skipcount FROM songs WHERE skipcount > 0 and unavailable != '1' ORDER by skipcount DESC";
 				$cols = 4;
 				$tableColumns = "<th>No.</th><th>Track</th><th>Artist</th><th>Skipcount</th>";
-				$queryDescription = "Shows the most skipped tracks based on skipcount";
 			break;
 							
 			case "track_per_rating":
-				$graph_title = "Best rated tracks";
+				$graph_title = "Best rated track";
 				$sql_statement = "SELECT title, rating, artist FROM songs WHERE rating > -1 and unavailable != '1' ORDER BY rating DESC";
 				$cols = 4;
 				$tableColumns = "<th>No.</th><th>Track</th><th>Rating</th><th>Artist</th>";
-				$queryDescription = "Shows the best rated tracks based on rating";
 			break;
 															
 			case "track_per_score":
-				$graph_title = "Best scored tracks";
+				$graph_title = "Best scored track";
 				$sql_statement = "SELECT title, score, artist FROM songs WHERE score > 0 and unavailable != '1' ORDER BY score DESC";
 				$cols = 4;
 				$tableColumns = "<th>No.</th><th>Track</th><th>Score</th><th>Artist</th>";
-				$queryDescription = "Shows the best scored tracks based on scoring";
 			break;
 										
 			// ARTISTS
 			case "artist_per_genre":
-				$graph_title = "Amount of artists per Genre";
+				$graph_title = "Artist per Genre";
 				$sql_statement = "SELECT distinct genre, COUNT(distinct artist) FROM songs WHERE unavailable != '1' GROUP BY genre ORDER by COUNT(artist) DESC";
 				$cols = 3;
 				$tableColumns = "<th>No.</th><th>Genre</th><th>Artists</th>";
-				$queryDescription = "Shows the artists with the most tracks";
 				$graph = true;
 			break;
 							
 			case "artist_per_playcount":	
-				$graph_title = "Most played artists";
+				$graph_title = "Most played artist";
 				$sql_statement = "SELECT distinct artist, sum(playcount) FROM songs WHERE playcount > 0 and unavailable != '1' GROUP BY artist ORDER BY sum(playcount) desc";
 				$cols = 3;
 				$tableColumns = "<th>No.</th><th>Artist</th><th>Overall Playcount</th>";
-				$queryDescription = "Shows the most played artists based on playcount";
 			break;
 										
 			case "artist_per_skipcount":	
-				$graph_title = "Most skipped artists";
+				$graph_title = "Most skipped artist";
 				$sql_statement = "SELECT distinct artist, sum(skipcount) FROM songs WHERE skipcount > 0 and unavailable != '1' GROUP BY artist ORDER BY sum(skipcount) desc";
 				$cols = 3;
 				$tableColumns = "<th>No.</th><th>Artist</th><th>Overall Skipcount</th>";
-				$queryDescription = "Shows the most skipped artists based on skipcount";
 			break;
 										
 			case "artist_per_score":
-				$graph_title = "Best scored artists";
+				$graph_title = "Best scored artist";
 				$sql_statement = "SELECT distinct artist, count(*), sum(score)/count(*), sum(score) FROM songs WHERE score > 0 and unavailable != '1' GROUP BY artist HAVING count(*) > 9 ORDER BY sum(score)/count(*) desc";
 				$cols = 5;
 				$tableColumns = "<th>No.</th><th>Artist</th><th>Scored Tracks</th><th>Average Score</th><th>Overall Score</th>";
-				$queryDescription = "Shows the best scored artists based on score";
 			break;
 
 			case "artist_per_rating":
-				$graph_title = "Best rated artists";
+				$graph_title = "Best rated artist";
 				$sql_statement = "SELECT distinct artist, count(*), sum(rating)/count(*), sum(rating) FROM songs WHERE rating > 0  and unavailable != '1' GROUP BY artist ORDER BY sum(rating)/count(*) desc";
 				$cols = 5;
 				$tableColumns = "<th>No.</th><th>Artist</th><th>Rated Tracks</th><th>Average Rating</th><th>Overall Rating</th>";
-				$queryDescription = "Shows the best rated artists based on rating";
 			break;
 										
 			// ALBUM
 			case "album_per_playcount":
-				$graph_title = "Most played albums";
-				$sql_statement = "SELECT distinct album, sum(playcount), artist FROM songs WHERE playcount > 0 and unavailable != '1' GROUP BY album ORDER BY sum(playcount) desc ";
+				$graph_title = "Most played album";
+				$sql_statement = "SELECT distinct album, sum(playcount), artist FROM songs WHERE playcount > 0 and unavailable != '1'  and album!='' GROUP BY album ORDER BY sum(playcount) desc ";
 				$cols = 4;
 				$tableColumns = "<th>No.</th><th>Album</th><th>Playcount</th><th>Artist</th>";
-				$queryDescription = "Shows the most played albums based on playcount";
+			break;
+
+			case "album_per_skipcount":	
+				$graph_title = "Most skipped album";
+				$sql_statement = "SELECT distinct album, sum(skipcount), artist FROM songs WHERE skipcount > 0 and unavailable != '1'  and album!='' GROUP BY album ORDER BY sum(skipcount) desc";
+				$cols = 4;
+				$tableColumns = "<th>No.</th><th>Album</th><th>Overall Skipcount</th><th>Artist</th>";
 			break;								
 							
 			// GENRE
@@ -607,7 +602,14 @@
 				$sql_statement = "SELECT distinct genre, sum(playcount), count(*) FROM songs WHERE playcount > 0 and unavailable != '1' GROUP BY genre ORDER BY sum(playcount) desc ";
 				$cols = 4;
 				$tableColumns = "<th>No.</th><th>Genre</th><th>Overall Playcount</th><th>Played tracks</th>";
-				$queryDescription = "Shows the most played genre based on playcount";
+				$graph = true;
+			break;
+
+			case "genre_per_playtime":
+				$graph_title = "Available playtime per genre";
+				$sql_statement = "SELECT distinct genre, sum(length) FROM songs WHERE unavailable != '1' GROUP BY genre ORDER BY sum(length) desc ";
+				$cols = 3;
+				$tableColumns = "<th>No.</th><th>Genre</th><th>Available playtime (days)</th>";
 				$graph = true;
 			break;
 																						
@@ -642,8 +644,6 @@
 		if($sql_statement != "")
 		{
 			echo "<h3>".$graph_title."</h3>";
-			echo '<b>What: </b>'.$queryDescription.'.';
-			echo '<br><b>Query:</b> '.$sql_statement.'.<br><br>';
 			$result = $db->query($sql_statement);	// run sql query
 			echo '<table cellpadding="0" cellspacing="0" border="0" class="display" id="example">';
 			echo "<thead><tr>$tableColumns</tr></thead><tbody>";
@@ -681,12 +681,23 @@
 				$hits = $hits+1;			
 				switch ($cols)
 				{
-					case "3":	
-						echo "<tr class='odd gradeU'>";
-							echo "<td>".$hits."</td>";
-							echo "<td>".$row[0]."</td>";
-							echo "<td>".$row[1]."</td>";
-						echo "</tr>";
+					case "3":
+						if($selected_stats = "genre_per_playtime")
+						{
+							echo "<tr class='odd gradeU'>";
+								echo "<td>".$hits."</td>";
+								echo "<td>".$row[0]."</td>";
+								echo "<td>".round($row[1] / 60 / 60 /24 /1000000000,2);"</td>";
+							echo "</tr>";
+						}
+						else
+						{
+							echo "<tr class='odd gradeU'>";
+								echo "<td>".$hits."</td>";
+								echo "<td>".$row[0]."</td>";
+								echo "<td>".$row[1]."</td>";
+							echo "</tr>";
+						}
 					break;
 
 					case "4":	
@@ -763,6 +774,14 @@
 						echo '<th><input type="text" name="search_platform" value="Search" class="search_init" /></th>';	
 					break;
 
+					case "y":
+						echo '<th><input type="text" name="search_platform" value="Search" class="search_init" /></th>';
+						echo '<th><input type="text" name="search_platform" value="Search" class="search_init" /></th>';
+						echo '<th><input type="text" name="search_platform" value="Search" class="search_init" /></th>';
+						echo '<th><input type="text" name="search_platform" value="Search" class="search_init" /></th>';
+						echo '<th><input type="text" name="search_platform" value="Search" class="search_init" /></th>';	
+					break;
+
 					case "6":	
 						echo '<th><input type="text" name="search_platform" value="Search" class="search_init" /></th>';
 						echo '<th><input type="text" name="search_platform" value="Search" class="search_init" /></th>';
@@ -776,12 +795,15 @@
 			echo '</tfoot>';
 			echo '<table>';
 
+			echo '<br><br><b>Query:</b> '.$sql_statement.'.<br><br>';
+
 			if($graph == true)
 			{
 		?>
 				<script>
 					// Default-values here: http://www.chartjs.org/docs/
 					var pieoptions = {	
+						// no options so far
 					}
 
 					// chart.js: generate the graph

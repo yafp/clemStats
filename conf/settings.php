@@ -8,7 +8,7 @@
 	$tagline	= "a clementine database analyzer";
 
 	// VERSION
-	$version 	= "20130510.01";
+	$version 	= "20130511.01";
 
 	// CONFIG
 	$dbpath		= '/home/fidel/.config/Clementine/clementine.db';		// not yet in use
