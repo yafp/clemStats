@@ -23,7 +23,7 @@ body {
 	height: 100px;
 	background: gray;
 	background: #696969;
-	padding-left: 30px;
+	padding-left: 10px;
 
 	border-style:none;
 	border-bottom:solid orange;
@@ -32,7 +32,7 @@ body {
 
 #header h1 {
 	color: orange;
-	font-size: 40px;
+	font-size: 30px;
 	padding-top: 10px;
 }
 
@@ -45,7 +45,7 @@ body {
 #header h2 {
 	color: white;
 	padding-top: 10px;
-	font-size: 16px;
+	font-size: 12px;
 	padding-bottom:10px;
 }
 
@@ -54,7 +54,7 @@ body {
 	float:right; 
 	color: white;
 	margin-top: -60px;
-	margin-right: 30px;
+	margin-right: 10px;
 }
 
 #header_info a {
@@ -66,8 +66,8 @@ body {
 -----------------------------------------------------------------------------*/
 #content {
 	padding: 0 0 50px;
-	padding-left: 30px;
-	padding-right: 30px;
+	padding-left: 10px;
+	padding-right: 10px;
 }
 
 #content h3 {
@@ -76,3 +76,12 @@ body {
 	padding-top: 30px;
 	padding-bottom: 10px;
 }
+
+#randomPick a{
+	color: orange;
+	padding: 5px;
+	background: #696969;
+	border-radius: 5px;
+}
+
+

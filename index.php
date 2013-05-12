@@ -16,7 +16,6 @@
 	<link rel="stylesheet" href="css/latest.css" type="text/css" media="screen, projection" />
 	<!--[if lte IE 6]><link rel="stylesheet" href="css/style_ie.css" type="text/css" media="screen, projection" /><![endif]-->
 	<style type="text/css" title="currentStyle">@import "css/table.css";</style>
-
 	<link rel="stylesheet" href="js/DataTables-1.9.4/extras/TableTools/media/css/TableTools.css" type="text/css" media="screen, projection" />
 
 	<!-- jquery, chart,js & datatable stuff -->
@@ -24,7 +23,6 @@
 	<script type="text/javascript" language="javascript" src="js/DataTables-1.9.4/media/js/jquery.dataTables.min.js"></script>
 	<script type="text/javascript" language="javascript" src="js/DataTables-1.9.4/extras/TableTools/media/js/ZeroClipboard.js"></script>
 	<script type="text/javascript" language="javascript" src="js/DataTables-1.9.4/extras/TableTools/media/js/TableTools.min.js"></script>
-
 	<script src="js/Chart.js_Regaddi/Chart.min_20130509.js"></script>
 	<script>
 	function doPost() 
@@ -37,27 +35,26 @@
         document.getElementById('graph1').style.display = "none";
 	}
 
+	function doHideRandom()
+	{
+        document.getElementById('randomPick').style.display = "none";
+	}
+
 	function dbOptions()
 	{
+		alert("Everything is fine.");
+
+		/*
 		var r=confirm("dummy: Do you want to backup your Clementine database?");
 		if (r==true)
 		{
-			/*
-		  	srcFile = '/home/fidel/.config/Clementine/clementine_clemStats.db';     
-			destFile = '/home/fidel/.config/Clementine/clementine.db';
-
-			var copyFileSync = function(srcFile, destFile, encoding) {
-  			var content = fs.readFileSync(srcFile, encoding);
-  				fs.writeFileSync(destFile, content, encoding);
-			}
-
-			alert("Dummy - Backup done.");
-			*/
+	
 		}
 		else
 		{
 		  // "You pressed Cancel!";
 		} 
+		*/
 	}
 	</script>
 
@@ -74,7 +71,7 @@
 				
 				"bSortClasses": false, // should speed it up a little - TESTING
 				"aLengthMenu": [[10, 25, 50, 100, 500, -1], [10, 25, 50, 100, 500, "All"]],
-			    "iDisplayLength": 25,
+			    "iDisplayLength": 10,
 				"oLanguage": {
 					"sSearch": "Search all columns:"
 				}
@@ -108,6 +105,7 @@
 		} );
 	</script>
 </head>
+
 
 
 <body>
@@ -191,16 +189,16 @@
 					<td>
 						<select name="dropdown" value="options" onchange="doPost();">
 							<option disabled selected>Tracks <?php echo "(".$tracks_all.")"; ?></option>	
-							<option value="track_per_lastplayed">- Playlist</option>
+							<option value="track_per_lastplayed">- Last played</option>
 							<option value="track_per_playcount">- Most played track</option>
 							<option value="track_per_skipcount">- Most skipped track</option>
 							<option value="track_per_rating">- Best rated track</option>
 							<option value="track_per_score">- Best scored track</option>
 							<option value="track_per_year">- Tracks per year</option>
+							<option value="track_per_bitrate">- Tracks per bitrate</option>
 							<option value="all_tracks">- All tracks (slow)</option>
 						</select>
 					</td>
-
 					<td>
 						<select name="dropdown" value="options" onchange="doPost();">
 							<option disabled selected>Artists <?php echo "(".$overall_artists.")"; ?></option>			
@@ -211,7 +209,6 @@
 							<option value="artist_per_score">- Best scored artist</option>
 						</select>
 					</td>
-
 					<td>
 						<select name="dropdown" value="options" onchange="doPost();">
 							<option disabled selected>Albums <?php echo "(".$overall_albums.")"; ?></option>	
@@ -220,22 +217,19 @@
 							<option value="album_per_year">- Album per year</option>	
 						</select>
 					</td>
-
 					<td>
 						<select name="dropdown" value="options" onchange="doPost();">
 							<option disabled selected>Genre <?php echo "(".$overall_genres.")"; ?></option>	
 							<option value="genre_per_playcount">- Most played genre</option>
 							<option value="artist_per_genre">- Artists per genre</option>
 							<option value="track_per_genre">- Tracks per genre</option>
-							<option value="genre_per_playtime">- Available playtime per genre</option>
+							<option value="genre_per_playtime">- Approximate time per genre</option>
 						</select>
 					</td>
-
 					<td><input hidden type="Submit" Name="Submit1" value="Load"></td>
 				</tr>
-
 				<tr><td colspan="2">Tracks played: <?php echo $tracks_played." ".round($tracks_played_ratio, 2)."%"; ?></td></tr>
-				<tr><td colspan="2">Theoretical collection playtime: <?php echo $tracks_playtime." days"; ?></td></tr>
+				<tr><td colspan="2">Approximate collection time: <?php echo $tracks_playtime." days"; ?></td></tr>
 			</table>
 		</div>
 		
@@ -246,6 +240,7 @@
 		<!-- #content-->
 		<div id="content">
 
+			<!-- No JavaScript support? -->
 			<noscript>
 				<h3>Warning</h3>
 				<font color="red">Your browser does not support JavaScript - which is needed for clemStats. Please enable it and then reload this page.</font><br>
@@ -260,21 +255,18 @@
 					//	
 					if (file_exists($dbpath)) 
 					{
-
-						// echo "<img src='img/database_good.png' width='32' alt='db_icon' title='Database: $dbpath'>";
-						echo "<a href='javascript:void(0);'' onclick='dbOptions()'>";
-						echo "<img src='img/database_good.png' width='32' alt='db_icon' title='Database: $dbpath' align='right'>";
-						echo "</a>";
-    					//echo "&nbsp;<b>Database: </b>".$dbpath;
+						echo "<a href='javascript:void(0);'' onclick='dbOptions()'><img src='img/database_good.png' width='32' alt='db_icon' title='Database: $dbpath' align='right'></a>";
 
 						if (!extension_loaded('dbus')) 
 						{
   							//die('Extension dbus is not loaded');
-  							echo "<b>Error:</b> dbus pecl extension is NOT loaded. It is not needed so far.";
+  							//echo "<b>Error:</b> dbus pecl extension is NOT loaded. It is not needed so far.";
 						}
 						else
 						{
 							//echo "<b>Notice:</b> dbus pecl extension is loaded.";
+							//$dbus = new Dbus(Dbus::BUS_SESSION, true);
+							//$dbus = new Dbus(Dbus::BUS_SESSION); 
 
 							// basic clemdbus infos:
 							// http://wiki.clementine-player.googlecode.com/git/MPRIS.wiki
@@ -285,66 +277,8 @@
 							// play/pause:
 							// terminal: qdbus org.mpris.clementine /Player org.freedesktop.MediaPlayer.Pause
 							// terminal:
-
-							/*
-							$d = new Dbus( Dbus::BUS_SESSION, true );
-							$n = $d->createProxy(
-							"org.freedesktop.Notifications", // connection name
-							"/org/freedesktop/Notifications", // object
-							"org.freedesktop.Notifications" // interface
-							);
-							$id = $n->Notify(
-							'Testapp', new DBusUInt32( 0 ), // app_name, replaces_id
-							'iceweasel', 'Testing http://ez.no', 'Test Notification', // app_icon, summary, body
-							new DBusArray( DBus::STRING, array() ), // actions
-							new DBusDict( // hints
-							DBus::VARIANT,
-							array(
-							'x' => new DBusVariant( 500 ), // x position on screen
-							'y' => new DBusVariant( 500 ), // y position on screen
-							'desktop-entry' => new DBusVariant( 'rhythmbox' )
-							)
-							),
-							1000 // expire timeout in msec
-							);
-							echo $id[0], "\n";
-							*/
-
-							/*
-							$d = new Dbus;
-							$n = $d->createProxy(
-							"org.gnome.ScreenSaver",
-							"/org/gnome/ScreenSaver",
-							"org.gnome.ScreenSaver"
-							);
-							var_dump($n->GetActive());
-							$n->SetActive( true );
-							var_dump($n->GetActive());
-							sleep(5);
-							$n->SetActive( false );
-							*/
-
-
-							/*
-							$DBus = new Dbus( Dbus::BUS_SESSION );
-							$DBusProxy = $DBus->createProxy
-							    (
-							        "org.gnome.Shell", // connection name
-							        "/org/gnome/Shell", // object
-							        "org.gnome.Shell" // interface
-							    );
-							$DBusProxy->Screenshot("/tmp/test_php.jpg");
-
-
-							$DBus = new Dbus( Dbus::BUS_SESSION );
-							$DBusProxy = $DBus->createProxy
-							(
-							    "org.mpris.MediaPlayer2.clementine", // connection name
-							    "GetMetadata", // object
-							    "org.mpris.MediaPlayer2" // interface
-							);	
-							*/ 
 						}
+
 					} 
 					else 
 					{
@@ -360,6 +294,68 @@
 
 
 <?php
+	//
+	// EMPTY - No query was selected
+	//
+	if(!isset($_POST['dropdown'])) 
+	{
+		if($enableRandomAlbum == true)
+		{
+			echo "<h3>Random pick</h3>";
+
+			$result5 = $db2->query('SELECT artist, album, art_automatic, year, genre FROM songs WHERE unavailable !="1" and artist != "" and album != "" ORDER BY RANDOM() LIMIT 1');
+			while ($row5 = $result5->fetchArray()) 
+			{
+				$random_artist = $row5[0];	
+				$random_album = $row5[1];
+				$random_cover = $row5[2];
+				$random_year = $row5[3];
+				$random_genre = $row5[4];
+			} 
+			
+			echo "<div id='randomPick'>";
+			echo "<b>Artist:</b> ".$random_artist;
+			echo "<br><b>Album:</b> ".$random_album;
+			//echo "<br><b>Random cover:</b> ".$random_cover;
+			if($random_year !="")
+			{
+				echo "<br><b>Year:</b> ".$random_year;
+			}
+			echo "<br><b>Genre:</b> ".$random_genre;
+			echo "<br>";
+
+			if($enableRandomCover == true)
+			{
+				$searchtag = $random_artist." ".$random_album;
+				$searchtag = urlencode($searchtag);
+				$link = "http://images.google.at/images?hl=de&q=$searchtag&btnG=Bilder-Suche&gbv=1";
+				echo "<br>";
+
+				$code = file_get_contents($link,'r');
+				ereg ("imgurl=http://www.[A-Za-z0-9-]*.[A-Za-z]*[^.]*.[A-Za-z]*", $code, $img);
+				ereg ("http://(.*)", $img[0], $img_pic);
+
+				if($img_pic[0] != '')
+				{
+					//echo "Image URL: ".$img_pic[0];
+					echo "<img src=".$img_pic[0]." width='400' border='1'>";
+				}
+
+				// further links
+				echo "<br><b>More about this artist:</b>";
+				echo "<br><a href='http://en.wikipedia.org/wiki/".urlencode($random_artist)."' target='_new'>Wikipedia</a>";						// wikipedia
+				echo "&nbsp;<a href='http://www.youtube.com/results?search_query=".$random_artist."' target='_new'>Youtube</a>";		// youtube
+				echo "&nbsp;<a href='https://vimeo.com/search?q=".$random_artist."' target='_new'>Vimeo</a>";							// vimeo
+				echo "&nbsp;<a href='https://soundcloud.com/search?q=".$random_artist."' target='_new'>Soundcloud</a>";						// last.fm
+				echo "&nbsp;<a href='http://www.last.fm/search?q=".$random_artist."' target='_new'>last.fm</a>";						// last.fm
+			}
+		echo "</div>";
+		}
+	}
+
+
+
+
 	//
 	// SUBMIT BUTTON
 	//
@@ -409,6 +405,14 @@
 				$tableColumns = "<th>No.</th><th>Year</th><th>Tracks</th>";
 				$graph = true;
 			break;
+
+			case "track_per_bitrate":
+				$graph_title = "Tracks per Bitrate";
+				$sql_statement = "SELECT distinct bitrate, COUNT(*) FROM songs WHERE unavailable != '1' GROUP BY bitrate ORDER by COUNT(*) DESC";
+				$cols = 3;
+				$tableColumns = "<th>No.</th><th>Bitrate</th><th>Tracks</th>";
+				$graph = true;
+			break;
 				
 			case "track_per_artist":
 				$graph_title = "Artist with most tracks";
@@ -419,8 +423,8 @@
 			break;
 							
 			case "track_per_lastplayed":
-				$graph_title = "Playlist";
-				$sql_statement = "SELECT title, artist, album, lastplayed FROM songs WHERE unavailable != '1' ORDER by lastplayed DESC LIMIT 500";
+				$graph_title = "Last played";
+				$sql_statement = "SELECT title, artist, album, lastplayed FROM songs WHERE unavailable != '1' ORDER by lastplayed DESC LIMIT 1000";
 				$cols = 'y';
 				$tableColumns = "<th>No.</th><th>Track</th><th>Artist</th><th>Album</th><th>Lastplayed</th>";
 				$graph = false;
@@ -428,33 +432,33 @@
 							
 			case "track_per_playcount":
 				$graph_title = "Most played track";
-				$sql_statement = "SELECT distinct title, artist, sum(playcount) FROM songs WHERE playcount > 0 and title != '' and unavailable != '1' GROUP BY title ORDER BY sum(playcount) desc ";
-				$cols = 4;
-				$tableColumns = "<th>No.</th><th>Track</th><th>Artist</th><th>Playcount</th>";
+				$sql_statement = "SELECT distinct title, artist, album, sum(playcount) FROM songs WHERE playcount > 0 and title != '' and unavailable != '1' GROUP BY title ORDER BY sum(playcount) desc ";
+				$cols = 5;
+				$tableColumns = "<th>No.</th><th>Track</th><th>Artist</th><th>Album</th><th>Playcount</th>";
 				$graph = false;
 			break;
 													
 			case "track_per_skipcount":
 				$graph_title = "Most skipped track";
-				$sql_statement = "SELECT title, artist , skipcount FROM songs WHERE skipcount > 0 and unavailable != '1' ORDER by skipcount DESC";
-				$cols = 4;
-				$tableColumns = "<th>No.</th><th>Track</th><th>Artist</th><th>Skipcount</th>";
+				$sql_statement = "SELECT title, artist, album, skipcount FROM songs WHERE skipcount > 0 and unavailable != '1' ORDER by skipcount DESC";
+				$cols = 5;
+				$tableColumns = "<th>No.</th><th>Track</th><th>Artist</th><th>Album</th><th>Skipcount</th>";
 				$graph = false;
 			break;
 							
 			case "track_per_rating":
 				$graph_title = "Best rated track";
-				$sql_statement = "SELECT title, rating, artist FROM songs WHERE rating > -1 and unavailable != '1' ORDER BY rating DESC";
-				$cols = 4;
-				$tableColumns = "<th>No.</th><th>Track</th><th>Rating</th><th>Artist</th>";
+				$sql_statement = "SELECT title, rating, artist, album FROM songs WHERE rating > -1 and unavailable != '1' ORDER BY rating DESC";
+				$cols = 5;
+				$tableColumns = "<th>No.</th><th>Track</th><th>Rating</th><th>Artist</th><th>Album</th>";
 				$graph = false;
 			break;
 															
 			case "track_per_score":
 				$graph_title = "Best scored track";
-				$sql_statement = "SELECT title, score, artist FROM songs WHERE score > 0 and unavailable != '1' ORDER BY score DESC";
-				$cols = 4;
-				$tableColumns = "<th>No.</th><th>Track</th><th>Score</th><th>Artist</th>";
+				$sql_statement = "SELECT title, score, artist, album FROM songs WHERE score > 0 and unavailable != '1' ORDER BY score DESC";
+				$cols = 5;
+				$tableColumns = "<th>No.</th><th>Track</th><th>Score</th><th>Artist</th><th>Album</th>";
 				$graph = false;
 			break;
 										
@@ -534,7 +538,7 @@
 			break;
 
 			case "genre_per_playtime":
-				$graph_title = "Available playtime per genre";
+				$graph_title = "Ápproximate time per genre";
 				$sql_statement = "SELECT distinct genre, sum(length) FROM songs WHERE unavailable != '1' GROUP BY genre ORDER BY sum(length) desc ";
 				$cols = 3;
 				$tableColumns = "<th>No.</th><th>Genre</th><th>Available playtime (days)</th>";
@@ -722,7 +726,7 @@
 			echo '</tfoot>';
 			echo '<table>';
 
-			echo '<br><br><b>Query:</b> '.$sql_statement.'.<br><br>';
+			echo '<br><br><b>Query:</b><font color="gray"> '.$sql_statement.'.</font><br><br>';
 
 			if($graph == true)
 			{
