@@ -346,7 +346,8 @@
 				echo "<br><a href='http://en.wikipedia.org/wiki/".urlencode($random_artist)."' target='_new'>Wikipedia</a>";						// wikipedia
 				echo "&nbsp;<a href='http://www.youtube.com/results?search_query=".$random_artist."' target='_new'>Youtube</a>";		// youtube
 				echo "&nbsp;<a href='https://vimeo.com/search?q=".$random_artist."' target='_new'>Vimeo</a>";							// vimeo
-				echo "&nbsp;<a href='https://soundcloud.com/search?q=".$random_artist."' target='_new'>Soundcloud</a>";						// last.fm
+				echo "&nbsp;<a href='https://soundcloud.com/search?q=".$random_artist."' target='_new'>Soundcloud</a>";						// soundcloud
+				echo "&nbsp;<a href='http://www.discogs.com/search?q=".$random_artist."' target='_new'>Discogs</a>";						// discogs
 				echo "&nbsp;<a href='http://www.last.fm/search?q=".$random_artist."' target='_new'>last.fm</a>";						// last.fm
 			}
 		echo "</div>";
