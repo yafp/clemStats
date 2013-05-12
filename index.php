@@ -13,7 +13,7 @@
 	<link rel='shortcut icon' type='image/x-icon' href='img/favicon.ico' />
 
 	<!-- CSS STUFF -->
-	<link rel="stylesheet" href="css/latest.css" type="text/css" media="screen, projection" />
+	<link rel="stylesheet" href="css/main.css" type="text/css" media="screen, projection" />
 	<!--[if lte IE 6]><link rel="stylesheet" href="css/style_ie.css" type="text/css" media="screen, projection" /><![endif]-->
 	<style type="text/css" title="currentStyle">@import "css/table.css";</style>
 	<link rel="stylesheet" href="js/DataTables-1.9.4/extras/TableTools/media/css/TableTools.css" type="text/css" media="screen, projection" />
@@ -114,7 +114,7 @@
 
 		<!-- #header-->
 		<header id="header">
-			<a href="index.php"><img src="img/icon_large_rotated.png" align="left" height="80pt" style="padding-top:10px;"></a>
+			<a href="index.php"><img src="img/appLogo.png" align="left" height="80pt" style="padding-top:10px;"></a>
 			<h1><a href="index.php"><?php  echo $appname; ?></a></h1>
 			<h2><?php  echo $tagline; ?></h2>
 
@@ -301,7 +301,7 @@
 	{
 		if($enableRandomAlbum == true)
 		{
-			echo "<h3>Random pick</h3>";
+			echo "<h3>Random pick <a href='index.php'><img src='img/reload.png' width='20' title='Refresh the random pick'></a></h3>";
 
 			$result5 = $db2->query('SELECT artist, album, art_automatic, year, genre FROM songs WHERE unavailable !="1" and artist != "" and album != "" ORDER BY RANDOM() LIMIT 1');
 			while ($row5 = $result5->fetchArray()) 
@@ -319,10 +319,9 @@
 			//echo "<br><b>Random cover:</b> ".$random_cover;
 			if($random_year !="")
 			{
-				echo "<br><b>Year:</b> ".$random_year;
+				echo "&nbsp;<b>Release:</b>&nbsp;".$random_year;
 			}
-			echo "<br><b>Genre:</b> ".$random_genre;
-			echo "<br>";
+			echo "&nbsp;<b>Genre:</b> ".$random_genre."<br>";
 
 			if($enableRandomCover == true)
 			{
@@ -335,10 +334,9 @@
 				ereg ("imgurl=http://www.[A-Za-z0-9-]*.[A-Za-z]*[^.]*.[A-Za-z]*", $code, $img);
 				ereg ("http://(.*)", $img[0], $img_pic);
 
-				if($img_pic[0] != '')
+				if($img_pic[0] != '')  // show random cover
 				{
-					//echo "Image URL: ".$img_pic[0];
-					echo "<img src=".$img_pic[0]." width='400' border='1'>";
+					echo "<img src=".$img_pic[0]." width='500' border='1'>";
 				}
 
 				// further links
@@ -349,6 +347,7 @@
 				echo "&nbsp;<a href='https://soundcloud.com/search?q=".$random_artist."' target='_new'>Soundcloud</a>";						// soundcloud
 				echo "&nbsp;<a href='http://www.discogs.com/search?q=".$random_artist."' target='_new'>Discogs</a>";						// discogs
 				echo "&nbsp;<a href='http://www.last.fm/search?q=".$random_artist."' target='_new'>last.fm</a>";						// last.fm
+				echo "&nbsp;<a href='http://www.whosampled.com/search/artists/?q=".$random_artist."' target='_new'>WhoSampled</a>";						// whosampled
 			}
 		echo "</div>";
 		}
@@ -539,7 +538,7 @@
 			break;
 
 			case "genre_per_playtime":
-				$graph_title = "Ápproximate time per genre";
+				$graph_title = "Approximate time per genre";
 				$sql_statement = "SELECT distinct genre, sum(length) FROM songs WHERE unavailable != '1' GROUP BY genre ORDER BY sum(length) desc ";
 				$cols = 3;
 				$tableColumns = "<th>No.</th><th>Genre</th><th>Available playtime (days)</th>";
