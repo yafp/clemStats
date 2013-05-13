@@ -27,7 +27,7 @@
 	<script>
 	function doPost() 
 	{ 
-		form1.Submit1.click();
+		form1.s.click();
 	} 
 
 	function doHide()
@@ -128,7 +128,7 @@
 
 
 <body>
-	<form name ="form1" Method ="POST" Action ="index.php">
+	<form name ="form1" Method ="GET" Action ="index.php">
 	<div id="wrapper">
 
 		<!-- #header-->
@@ -211,47 +211,47 @@
 				</tr>
 				<tr>
 					<td>
-						<select name="dropdown" value="options" onchange="doPost();">
+						<select name="q" value="options" onchange="doPost();">
 							<option disabled selected>Tracks <?php echo "(".$tracks_all.")"; ?></option>	
-							<option value="track_per_lastplayed">- Last played</option>
-							<option value="track_per_playcount">- Most played track</option>
-							<option value="track_per_skipcount">- Most skipped track</option>
-							<option value="track_per_rating">- Best rated track</option>
-							<option value="track_per_score">- Best scored track</option>
-							<option value="track_per_year">- Tracks per year</option>
-							<option value="track_per_bitrate">- Tracks per bitrate</option>
-							<option value="track_per_genre">- Tracks per genre</option>
-							<option value="all_tracks">- All tracks (slow)</option>
+							<option value="11">- Last played</option>
+							<option value="12">- Most played track</option>
+							<option value="13">- Most skipped track</option>
+							<option value="14">- Best rated track</option>
+							<option value="15">- Best scored track</option>
+							<option value="16">- Tracks per year</option>
+							<option value="17">- Tracks per bitrate</option>
+							<option value="18">- Tracks per genre</option>
+							<option value="19">- All tracks (slow)</option>
 						</select>
 					</td>
 					<td>
-						<select name="dropdown" value="options" onchange="doPost();">
+						<select name="q" value="options" onchange="doPost();">
 							<option disabled selected>Artists <?php echo "(".$overall_artists.")"; ?></option>			
-							<option value="track_per_artist">- Artist with most tracks</option>
-							<option value="artist_per_genre">- Artists per genre</option>
-							<option value="artist_per_playcount">- Most played artist</option>
-							<option value="artist_per_skipcount">- Most skipped artist</option>
-							<option value="artist_per_rating">- Best rated artist</option>
-							<option value="artist_per_score">- Best scored artist</option>
+							<option value="21">- Artist with most tracks</option>
+							<option value="22">- Artists per genre</option>
+							<option value="23">- Most played artist</option>
+							<option value="24">- Most skipped artist</option>
+							<option value="25">- Best rated artist</option>
+							<option value="26">- Best scored artist</option>
 						</select>
 					</td>
 					<td>
-						<select name="dropdown" value="options" onchange="doPost();">
+						<select name="q" value="options" onchange="doPost();">
 							<option disabled selected>Albums <?php echo "(".$overall_albums.")"; ?></option>	
-							<option value="album_per_playcount">- Most played album</option>
-							<option value="album_per_skipcount">- Most skipped album</option>
-							<option value="album_per_year">- Album per year</option>
-							<option value="album_per_genre">- Albums per genre</option>	
+							<option value="31">- Most played album</option>
+							<option value="32">- Most skipped album</option>
+							<option value="33">- Album per year</option>
+							<option value="34">- Albums per genre</option>	
 						</select>
 					</td>
 					<td>
-						<select name="dropdown" value="options" onchange="doPost();">
+						<select name="q" value="options" onchange="doPost();">
 							<option disabled selected>Genre <?php echo "(".$overall_genres.")"; ?></option>	
-							<option value="genre_per_playcount">- Most played genre</option>
-							<option value="genre_per_playtime">- Approximate time per genre</option>					
+							<option value="41">- Most played genre</option>
+							<option value="42">- Approximate time per genre</option>					
 						</select>
 					</td>
-					<td><input hidden type="Submit" Name="Submit1" value="Load"></td>
+					<td><input hidden type="Submit" Name="s" value="go"></td>
 				</tr>
 				<tr><td colspan="2">Tracks played: <?php echo $tracks_played." ".round($tracks_played_ratio, 2)."%"; ?></td></tr>
 				<tr><td colspan="2">Approximate collection time: <?php echo $tracks_playtime." days"; ?></td></tr>
@@ -320,84 +320,22 @@
 
 <?php
 	//
-	// EMPTY - No query was selected
+	// GET: do we get something or not?
 	//
-	if(!isset($_POST['dropdown'])) 
+	if(isset($_GET["q"]))
 	{
-		if($enableRandomAlbum == true)
-		{
-			echo "<h3>Random pick <a href='index.php'><img src='img/reload.png' width='20' title='Refresh the random pick'></a></h3>";
-
-			$result5 = $db2->query('SELECT artist, album, art_automatic, year, genre FROM songs WHERE unavailable !="1" and artist != "" and album != "" ORDER BY RANDOM() LIMIT 1');
-			while ($row5 = $result5->fetchArray()) 
-			{
-				$random_artist = $row5[0];	
-				$random_album = $row5[1];
-				$random_cover = $row5[2];
-				$random_year = $row5[3];
-				$random_genre = $row5[4];
-			} 
-			
-			echo "<div id='randomPick'>";
-			echo "<b>Artist:</b> ".$random_artist;
-			echo "<br><b>Album:</b> ".$random_album;
-			//echo "<br><b>Random cover:</b> ".$random_cover;
-			if($random_year !="")
-			{
-				echo "&nbsp;<b>Release:</b>&nbsp;".$random_year;
-			}
-			echo "&nbsp;<b>Genre:</b> ".$random_genre."<br>";
-
-			if($enableRandomCover == true)
-			{
-				$searchtag = $random_artist." ".$random_album;
-				$searchtag = urlencode($searchtag);
-				$link = "http://images.google.at/images?hl=de&q=$searchtag&btnG=Bilder-Suche&gbv=1";
-				echo "<br>";
-
-				$code = file_get_contents($link,'r');
-				ereg ("imgurl=http://www.[A-Za-z0-9-]*.[A-Za-z]*[^.]*.[A-Za-z]*", $code, $img);
-				ereg ("http://(.*)", $img[0], $img_pic);
-
-				if($img_pic[0] != '')  // show random cover
-				{
-					echo "<img src=".$img_pic[0]." width='500' border='1'>";
-				}
-
-				// further links
-				echo "<br><b>More about this artist:</b>";
-				echo "<br><a href='http://en.wikipedia.org/wiki/".urlencode($random_artist)."' target='_new'>Wikipedia</a>";						// wikipedia
-				echo "&nbsp;<a href='http://www.youtube.com/results?search_query=".$random_artist."' target='_new'>Youtube</a>";		// youtube
-				echo "&nbsp;<a href='https://vimeo.com/search?q=".$random_artist."' target='_new'>Vimeo</a>";							// vimeo
-				echo "&nbsp;<a href='https://soundcloud.com/search?q=".$random_artist."' target='_new'>Soundcloud</a>";						// soundcloud
-				echo "&nbsp;<a href='http://www.discogs.com/search?q=".$random_artist."' target='_new'>Discogs</a>";						// discogs
-				echo "&nbsp;<a href='http://www.last.fm/search?q=".$random_artist."' target='_new'>last.fm</a>";						// last.fm
-				echo "&nbsp;<a href='http://www.whosampled.com/search/artists/?q=".$random_artist."' target='_new'>WhoSampled</a>";						// whosampled
-			}
-		echo "</div>";
-		}
-	}
-
-
-
-
-	//
-	// SUBMIT BUTTON
-	//
-	if (isset($_POST['Submit1'])) 
-	{		
 		// init stuff
 		include "conf/settings.php";			// contains some core-strings
 		$sql_statement = "";
 		$hits = 0;								// counting results
-		$selected_stats = $_POST['dropdown']; 	// get selected option
-	
+		$selected_stats = $_GET["q"];
 		// sqlite handling
 		class MyDB extends SQLite3
 		{
 			function __construct()
 			{
-				$this->open('/home/fidel/.config/Clementine/clementine.db');
+				include "conf/settings.php";
+				$this->open($dbpath);
 			}
 		}
 
@@ -405,49 +343,10 @@
 	
 		switch ($selected_stats)
 		{
-			// ALL TRACKS
-			case "all_tracks":
-				$graph_title = "All Tracks";
-				$sql_statement = "SELECT artist, album, title, genre, year FROM songs WHERE unavailable != '1' ORDER BY album";
-				$cols = 6;
-				$tableColumns = "<th>No.</th><th>Artist.</th><th>Album</th><th>Title</th><th>Genre</th><th>Year</th>";
-				$graph = false;
-			break;
-
+			//
 			// TRACKS
-			case "track_per_genre":
-				$graph_title = "Tracks per Genre";
-				$sql_statement = "SELECT distinct genre, COUNT(*) FROM songs WHERE unavailable != '1' GROUP BY genre ORDER by COUNT(*) DESC";
-				$cols = 3;
-				$tableColumns = "<th>No.</th><th>Genre</th><th>Tracks</th>";
-				$graph = true;
-			break;
-
-			case "track_per_year":
-				$graph_title = "Tracks per Year";
-				$sql_statement = "SELECT distinct year, COUNT(*) FROM songs WHERE unavailable != '1' GROUP BY year ORDER by COUNT(*) DESC";
-				$cols = 3;
-				$tableColumns = "<th>No.</th><th>Year</th><th>Tracks</th>";
-				$graph = true;
-			break;
-
-			case "track_per_bitrate":
-				$graph_title = "Tracks per Bitrate";
-				$sql_statement = "SELECT distinct bitrate, COUNT(*) FROM songs WHERE unavailable != '1' GROUP BY bitrate ORDER by COUNT(*) DESC";
-				$cols = 3;
-				$tableColumns = "<th>No.</th><th>Bitrate</th><th>Tracks</th>";
-				$graph = true;
-			break;
-				
-			case "track_per_artist":
-				$graph_title = "Artist with most tracks";
-				$sql_statement = "SELECT distinct artist, COUNT(*) FROM songs WHERE unavailable != '1' and artist!='Various Artists' GROUP BY artist ORDER by COUNT(*) DESC";
-				$cols = 3;
-				$tableColumns = "<th>No.</th><th>Artist</th><th>Tracks</th>";
-				$graph = false;
-			break;
-							
-			case "track_per_lastplayed":
+			//
+			case "11":
 				$graph_title = "Last played";
 				$sql_statement = "SELECT title, artist, album, lastplayed FROM songs WHERE unavailable != '1' ORDER by lastplayed DESC LIMIT 1000";
 				$cols = 'y';
@@ -455,7 +354,7 @@
 				$graph = false;
 			break;
 							
-			case "track_per_playcount":
+			case "12":
 				$graph_title = "Most played track";
 				$sql_statement = "SELECT distinct title, artist, album, sum(playcount) FROM songs WHERE playcount > 0 and title != '' and unavailable != '1' GROUP BY title ORDER BY sum(playcount) desc ";
 				$cols = 5;
@@ -463,7 +362,7 @@
 				$graph = false;
 			break;
 													
-			case "track_per_skipcount":
+			case "13":
 				$graph_title = "Most skipped track";
 				$sql_statement = "SELECT title, artist, album, skipcount FROM songs WHERE skipcount > 0 and unavailable != '1' ORDER by skipcount DESC";
 				$cols = 5;
@@ -471,7 +370,7 @@
 				$graph = false;
 			break;
 							
-			case "track_per_rating":
+			case "14":
 				$graph_title = "Best rated track";
 				$sql_statement = "SELECT title, rating, artist, album FROM songs WHERE rating > -1 and unavailable != '1' ORDER BY rating DESC";
 				$cols = 5;
@@ -479,16 +378,59 @@
 				$graph = false;
 			break;
 															
-			case "track_per_score":
+			case "15":
 				$graph_title = "Best scored track";
 				$sql_statement = "SELECT title, score, artist, album FROM songs WHERE score > 0 and unavailable != '1' ORDER BY score DESC";
 				$cols = 5;
 				$tableColumns = "<th>No.</th><th>Track</th><th>Score</th><th>Artist</th><th>Album</th>";
 				$graph = false;
 			break;
-										
-			// ARTISTS
-			case "artist_per_genre":
+
+			case "16":
+				$graph_title = "Tracks per Year";
+				$sql_statement = "SELECT distinct year, COUNT(*) FROM songs WHERE unavailable != '1' GROUP BY year ORDER by COUNT(*) DESC";
+				$cols = 3;
+				$tableColumns = "<th>No.</th><th>Year</th><th>Tracks</th>";
+				$graph = true;
+			break;
+
+			case "17":
+				$graph_title = "Tracks per Bitrate";
+				$sql_statement = "SELECT distinct bitrate, COUNT(*) FROM songs WHERE unavailable != '1' GROUP BY bitrate ORDER by COUNT(*) DESC";
+				$cols = 3;
+				$tableColumns = "<th>No.</th><th>Bitrate</th><th>Tracks</th>";
+				$graph = true;
+			break;
+
+			case "18":
+				$graph_title = "Tracks per Genre";
+				$sql_statement = "SELECT distinct genre, COUNT(*) FROM songs WHERE unavailable != '1' GROUP BY genre ORDER by COUNT(*) DESC";
+				$cols = 3;
+				$tableColumns = "<th>No.</th><th>Genre</th><th>Tracks</th>";
+				$graph = true;
+			break;
+
+			// ALL TRACKS
+			case "19":
+				$graph_title = "All Tracks";
+				$sql_statement = "SELECT artist, album, title, genre, year FROM songs WHERE unavailable != '1' ORDER BY album";
+				$cols = 6;
+				$tableColumns = "<th>No.</th><th>Artist.</th><th>Album</th><th>Title</th><th>Genre</th><th>Year</th>";
+				$graph = false;
+			break;
+			
+			//
+			// ARTIST
+			//
+			case "21":
+				$graph_title = "Artist with most tracks";
+				$sql_statement = "SELECT distinct artist, COUNT(*) FROM songs WHERE unavailable != '1' and artist!='Various Artists' GROUP BY artist ORDER by COUNT(*) DESC";
+				$cols = 3;
+				$tableColumns = "<th>No.</th><th>Artist</th><th>Tracks</th>";
+				$graph = false;
+			break;
+							
+			case "22":
 				$graph_title = "Artist per Genre";
 				$sql_statement = "SELECT distinct genre, COUNT(distinct artist) FROM songs WHERE unavailable != '1' GROUP BY genre ORDER by COUNT(distinct artist) DESC";
 				$cols = 3;
@@ -496,7 +438,7 @@
 				$graph = true;
 			break;
 							
-			case "artist_per_playcount":	
+			case "23":	
 				$graph_title = "Most played artist";
 				$sql_statement = "SELECT distinct artist, sum(playcount) FROM songs WHERE playcount > 0 and unavailable != '1' GROUP BY artist ORDER BY sum(playcount) desc";
 				$cols = 3;
@@ -504,7 +446,7 @@
 				$graph = false;
 			break;
 										
-			case "artist_per_skipcount":	
+			case "24":	
 				$graph_title = "Most skipped artist";
 				$sql_statement = "SELECT distinct artist, sum(skipcount) FROM songs WHERE skipcount > 0 and unavailable != '1' GROUP BY artist ORDER BY sum(skipcount) desc";
 				$cols = 3;
@@ -512,7 +454,7 @@
 				$graph = false;
 			break;
 										
-			case "artist_per_score":
+			case "26":
 				$graph_title = "Best scored artist";
 				$sql_statement = "SELECT distinct artist, count(*), sum(score)/count(*), sum(score) FROM songs WHERE score > 0 and unavailable != '1' GROUP BY artist HAVING count(*) > 9 ORDER BY sum(score)/count(*) desc";
 				$cols = 5;
@@ -520,16 +462,18 @@
 				$graph = false;
 			break;
 
-			case "artist_per_rating":
+			case "25":
 				$graph_title = "Best rated artist";
 				$sql_statement = "SELECT distinct artist, count(*), sum(rating)/count(*), sum(rating) FROM songs WHERE rating > 0  and unavailable != '1' GROUP BY artist ORDER BY sum(rating)/count(*) desc";
 				$cols = 5;
 				$tableColumns = "<th>No.</th><th>Artist</th><th>Rated Tracks</th><th>Average Rating</th><th>Overall Rating</th>";
 				$graph = false;
 			break;
-										
+			
+			//
 			// ALBUM
-			case "album_per_playcount":
+			//
+			case "31":
 				$graph_title = "Most played album";
 				$sql_statement = "SELECT distinct album, sum(playcount), artist FROM songs WHERE playcount > 0 and unavailable != '1'  and album!='' GROUP BY album ORDER BY sum(playcount) desc ";
 				$cols = 4;
@@ -537,7 +481,15 @@
 				$graph = false;
 			break;
 
-			case "album_per_year":
+			case "32":	
+				$graph_title = "Most skipped album";
+				$sql_statement = "SELECT distinct album, sum(skipcount), artist FROM songs WHERE skipcount > 0 and unavailable != '1'  and album!='' GROUP BY album ORDER BY sum(skipcount) desc";
+				$cols = 4;
+				$tableColumns = "<th>No.</th><th>Album</th><th>Overall Skipcount</th><th>Artist</th>";
+				$graph = false;
+			break;	
+
+			case "33":
 				$graph_title = "Albums per Year";
 				$sql_statement = "SELECT distinct year, COUNT(distinct album) FROM songs WHERE unavailable != '1' GROUP BY year ORDER by COUNT(distinct album) DESC";
 				$cols = 3;
@@ -545,16 +497,18 @@
 				$graph = true;
 			break;
 
-			case "album_per_skipcount":	
-				$graph_title = "Most skipped album";
-				$sql_statement = "SELECT distinct album, sum(skipcount), artist FROM songs WHERE skipcount > 0 and unavailable != '1'  and album!='' GROUP BY album ORDER BY sum(skipcount) desc";
-				$cols = 4;
-				$tableColumns = "<th>No.</th><th>Album</th><th>Overall Skipcount</th><th>Artist</th>";
-				$graph = false;
-			break;								
-							
+			case "34":
+				$graph_title = "Albums per  Genre";
+				$sql_statement = "SELECT distinct genre, COUNT(distinct album) FROM songs WHERE unavailable != '1' GROUP BY genre ORDER by COUNT(distinct album) DESC";
+				$cols = 3;
+				$tableColumns = "<th>No.</th><th>Genre</th><th>Albums</th>";
+				$graph = true;
+			break;				
+
+			//
 			// GENRE
-			case "genre_per_playcount":
+			//
+			case "41":
 				$graph_title = "Most played genre";
 				$sql_statement = "SELECT distinct genre, sum(playcount), count(*) FROM songs WHERE playcount > 0 and unavailable != '1' GROUP BY genre ORDER BY sum(playcount) desc ";
 				$cols = 4;
@@ -562,7 +516,7 @@
 				$graph = true;
 			break;
 
-			case "genre_per_playtime":
+			case "42":
 				$graph_title = "Approximate time per genre";
 				$sql_statement = "SELECT distinct genre, sum(length) FROM songs WHERE unavailable != '1' GROUP BY genre ORDER BY sum(length) desc ";
 				$cols = 3;
@@ -570,17 +524,9 @@
 				$graph = true;
 			break;
 
-
-			case "album_per_genre":
-				$graph_title = "Albums per  Genre";
-				$sql_statement = "SELECT distinct genre, COUNT(distinct album) FROM songs WHERE unavailable != '1' GROUP BY genre ORDER by COUNT(distinct album) DESC";
-				$cols = 3;
-				$tableColumns = "<th>No.</th><th>Genre</th><th>Albums</th>";
-				$graph = true;
-			break;
-				
-
-			// SPECIAL-CASE ;)
+			//
+			// SPECIAL-CASE
+			//
 			case "";
 				$graph_title = "";
 				$sql_statement = "";
@@ -720,41 +666,41 @@
 			switch ($cols)
 			{
 					case "3":	
-						echo '<th><input type="text" name="search engines" value="Search" class="search_init" /></th>';
-						echo '<th><input type="text" name="search_browser" value="Search" class="search_init" /></th>';
-						echo '<th><input type="text" name="search_platform" value="Search" class="search_init" /></th>';
+						echo '<th><input type="text" name="search" value="Search" class="search_init" /></th>';
+						echo '<th><input type="text" name="search" value="Search" class="search_init" /></th>';
+						echo '<th><input type="text" name="search" value="Search" class="search_init" /></th>';
 					break;
 
 					case "4":	
-						echo '<th><input type="text" name="search engines" value="Search" class="search_init" /></th>';
-						echo '<th><input type="text" name="search_browser" value="Search" class="search_init" /></th>';
-						echo '<th><input type="text" name="search_platform" value="Search" class="search_init" /></th>';
-						echo '<th><input type="text" name="search_platform" value="Search" class="search_init" /></th>';
+						echo '<th><input type="text" name="search" value="Search" class="search_init" /></th>';
+						echo '<th><input type="text" name="search" value="Search" class="search_init" /></th>';
+						echo '<th><input type="text" name="search" value="Search" class="search_init" /></th>';
+						echo '<th><input type="text" name="search" value="Search" class="search_init" /></th>';
 					break;
 										
 					case "5":
-						echo '<th><input type="text" name="search_platform" value="Search" class="search_init" /></th>';
-						echo '<th><input type="text" name="search_platform" value="Search" class="search_init" /></th>';
-						echo '<th><input type="text" name="search_platform" value="Search" class="search_init" /></th>';
-						echo '<th><input type="text" name="search_platform" value="Search" class="search_init" /></th>';
-						echo '<th><input type="text" name="search_platform" value="Search" class="search_init" /></th>';	
+						echo '<th><input type="text" name="search" value="Search" class="search_init" /></th>';
+						echo '<th><input type="text" name="search" value="Search" class="search_init" /></th>';
+						echo '<th><input type="text" name="search" value="Search" class="search_init" /></th>';
+						echo '<th><input type="text" name="search" value="Search" class="search_init" /></th>';
+						echo '<th><input type="text" name="search" value="Search" class="search_init" /></th>';	
 					break;
 
 					case "y":
-						echo '<th><input type="text" name="search_platform" value="Search" class="search_init" /></th>';
-						echo '<th><input type="text" name="search_platform" value="Search" class="search_init" /></th>';
-						echo '<th><input type="text" name="search_platform" value="Search" class="search_init" /></th>';
-						echo '<th><input type="text" name="search_platform" value="Search" class="search_init" /></th>';
-						echo '<th><input type="text" name="search_platform" value="Search" class="search_init" /></th>';	
+						echo '<th><input type="text" name="search" value="Search" class="search_init" /></th>';
+						echo '<th><input type="text" name="search" value="Search" class="search_init" /></th>';
+						echo '<th><input type="text" name="search" value="Search" class="search_init" /></th>';
+						echo '<th><input type="text" name="search" value="Search" class="search_init" /></th>';
+						echo '<th><input type="text" name="search" value="Search" class="search_init" /></th>';	
 					break;
 
 					case "6":	
-						echo '<th><input type="text" name="search_platform" value="Search" class="search_init" /></th>';
-						echo '<th><input type="text" name="search_platform" value="Search" class="search_init" /></th>';
-						echo '<th><input type="text" name="search_platform" value="Search" class="search_init" /></th>';
-						echo '<th><input type="text" name="search_platform" value="Search" class="search_init" /></th>';
-						echo '<th><input type="text" name="search_platform" value="Search" class="search_init" /></th>';	
-						echo '<th><input type="text" name="search_platform" value="Search" class="search_init" /></th>';
+						echo '<th><input type="text" name="search" value="Search" class="search_init" /></th>';
+						echo '<th><input type="text" name="search" value="Search" class="search_init" /></th>';
+						echo '<th><input type="text" name="search" value="Search" class="search_init" /></th>';
+						echo '<th><input type="text" name="search" value="Search" class="search_init" /></th>';
+						echo '<th><input type="text" name="search" value="Search" class="search_init" /></th>';	
+						echo '<th><input type="text" name="search" value="Search" class="search_init" /></th>';
 					break;
 			}
 			echo '</tr>';
@@ -779,4 +725,59 @@
 			}
 		}
 	}
+	else
+	{
+		if($enableRandomAlbum == true)
+		{
+			echo "<h3>Random pick <a href='index.php'><img src='img/reload.png' width='20' title='Refresh the random pick'></a></h3>";
+
+			$result5 = $db2->query('SELECT artist, album, art_automatic, year, genre FROM songs WHERE unavailable !="1" and artist != "" and album != "" ORDER BY RANDOM() LIMIT 1');
+			while ($row5 = $result5->fetchArray()) 
+			{
+				$random_artist = $row5[0];	
+				$random_album = $row5[1];
+				$random_cover = $row5[2];
+				$random_year = $row5[3];
+				$random_genre = $row5[4];
+			} 
+			
+			echo "<div id='randomPick'>";
+			echo "<b>Artist:</b> ".$random_artist;
+			echo "<br><b>Album:</b> ".$random_album;
+			if($random_year !="")
+			{
+				echo "&nbsp;<b>Release:</b>&nbsp;".$random_year;
+			}
+			echo "&nbsp;<b>Genre:</b> ".$random_genre."<br>";
+
+			if($enableRandomCover == true)
+			{
+				$searchtag = $random_artist." ".$random_album;
+				$searchtag = urlencode($searchtag);
+				$link = "http://images.google.at/images?hl=de&q=$searchtag&btnG=Bilder-Suche&gbv=1";
+				echo "<br>";
+
+				$code = file_get_contents($link,'r');
+				ereg ("imgurl=http://www.[A-Za-z0-9-]*.[A-Za-z]*[^.]*.[A-Za-z]*", $code, $img);
+				ereg ("http://(.*)", $img[0], $img_pic);
+
+				if($img_pic[0] != '')  // show random cover
+				{
+					echo "<img src=".$img_pic[0]." width='500' border='1'>";
+				}
+
+				// further links
+				echo "<br><b>More about this artist:</b>";
+				echo "<br><a href='http://en.wikipedia.org/wiki/".urlencode($random_artist)."' target='_new'>Wikipedia</a>";						// wikipedia
+				echo "&nbsp;<a href='http://www.youtube.com/results?search_query=".$random_artist."' target='_new'>Youtube</a>";		// youtube
+				echo "&nbsp;<a href='https://vimeo.com/search?q=".$random_artist."' target='_new'>Vimeo</a>";							// vimeo
+				echo "&nbsp;<a href='https://soundcloud.com/search?q=".$random_artist."' target='_new'>Soundcloud</a>";						// soundcloud
+				echo "&nbsp;<a href='http://www.discogs.com/search?q=".$random_artist."' target='_new'>Discogs</a>";						// discogs
+				echo "&nbsp;<a href='http://www.last.fm/search?q=".$random_artist."' target='_new'>last.fm</a>";						// last.fm
+				echo "&nbsp;<a href='http://www.whosampled.com/search/artists/?q=".$random_artist."' target='_new'>WhoSampled</a>";						// whosampled
+			}
+		echo "</div>";
+		}
+
+	}	
 ?>

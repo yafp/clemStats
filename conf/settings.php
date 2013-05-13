@@ -6,12 +6,12 @@
 	// GENERAL
 	$appname	= "clemStats";
 	$tagline	= "a clementine database analyzer";
-	$version 	= "20130513.01";
+	$version 	= "20130513.02";
 
 	// CONFIG
 	$dbpath		= '/home/fidel/.config/Clementine/clementine.db';		// not yet in use
 
 	// Random album & cover on main page when no search occured
-	$enableRandomAlbum = true;		// random album
-	$enableRandomCover = true;		// randomcover via google search - needs internet access.
+	$enableRandomAlbum = true;		// random local album
+	$enableRandomCover = true;		// cover via google search - needs internet access.
 ?>
