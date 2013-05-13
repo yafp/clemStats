@@ -50,10 +50,6 @@
 		{
 	
 		}
-		else
-		{
-		  // "You pressed Cancel!";
-		} 
 		*/
 	}
 	</script>
@@ -66,7 +62,30 @@
 				"sDom": 'T<"clear">lfrtip',
 				"oTableTools": {
 					//"aButtons": [{"sExtends":    "collection","sButtonText": "Save", "aButtons":    [ "csv", "xls", "pdf" ]}],
-					"sSwfPath": "js/DataTables-1.9.4/extras/TableTools/media/swf/copy_csv_xls_pdf.swf"
+					"sSwfPath": "js/DataTables-1.9.4/extras/TableTools/media/swf/copy_csv_xls_pdf.swf",
+					"aButtons": [
+		                  "csv",
+		                  {
+		                     "sExtends": "print",
+		                     "sButtonText": "Printview"
+		                  },
+		                  {
+		                     "sExtends": "pdf",
+		                     "sTitle": "clemStats - Portrait", // ansonsten steht hier: KIS Kniel Inventar System - aka doc-title
+		                     "sFileName": "<?php print('clemStats_export_portrait'); ?>.pdf",
+		                     "sPdfOrientation": "portrait",
+		                     "sPdfMessage": "PDF (portrait)",
+		                     "sButtonText": "PDF (portrait)"
+		                  },
+		                  {
+		                     "sExtends": "pdf",
+		                     "sTitle": "clemStats - Landscape", // ansonsten steht hier: KIS Kniel Inventar System - aka doc-title
+		                     "sFileName": "<?php print('clemStats_export_landscape'); ?>.pdf",
+		                     "sPdfOrientation": "landscape",
+		                     "sPdfMessage": "PDF (landscape)",
+		                     "sButtonText": "PDF (landscape)"
+		                  }
+		               ]
 				},
 				
 				"bSortClasses": false, // should speed it up a little - TESTING
@@ -120,9 +139,7 @@
 
 			<?php
 				echo '<div id="header_info">';
-					$now = date("Ymd G:i");
-					echo "<b>version:</b>&nbsp;".$version."&nbsp;|&nbsp;<a href='https://github.com/macfidelity/clemStats/wiki'>Wiki</a>&nbsp;|&nbsp;<a href='https://github.com/macfidelity/clemStats/issues'>Issues</a>&nbsp;|&nbsp;Page generated at:".$now;
-				
+
 					// insert old basic table here
 					if (file_exists($dbpath)) 
 					{
@@ -181,10 +198,17 @@
 							$tracks_playtime = $row7[0] / 60 / 60 /24 /1000000000;
 							$tracks_playtime = round($tracks_playtime, 2);
 						} 
+
+						$now = date("Ymd G:i");				// generate a timestamp			
 					}
 			?>
 
+
+
 			<table border="0" >
+				<tr>
+					<td colspan="4"><b>version: </b><?php echo $version; ?>&nbsp;|&nbsp;<a href="https://github.com/macfidelity/clemStats/wiki">Wiki</a>&nbsp;|&nbsp;<a href="https://github.com/macfidelity/clemStats/issues">Issues</a>&nbsp;|&nbsp;Page generated at: <?php echo $now; ?></td>
+				</tr>
 				<tr>
 					<td>
 						<select name="dropdown" value="options" onchange="doPost();">
@@ -196,6 +220,7 @@
 							<option value="track_per_score">- Best scored track</option>
 							<option value="track_per_year">- Tracks per year</option>
 							<option value="track_per_bitrate">- Tracks per bitrate</option>
+							<option value="track_per_genre">- Tracks per genre</option>
 							<option value="all_tracks">- All tracks (slow)</option>
 						</select>
 					</td>
@@ -203,6 +228,7 @@
 						<select name="dropdown" value="options" onchange="doPost();">
 							<option disabled selected>Artists <?php echo "(".$overall_artists.")"; ?></option>			
 							<option value="track_per_artist">- Artist with most tracks</option>
+							<option value="artist_per_genre">- Artists per genre</option>
 							<option value="artist_per_playcount">- Most played artist</option>
 							<option value="artist_per_skipcount">- Most skipped artist</option>
 							<option value="artist_per_rating">- Best rated artist</option>
@@ -214,16 +240,15 @@
 							<option disabled selected>Albums <?php echo "(".$overall_albums.")"; ?></option>	
 							<option value="album_per_playcount">- Most played album</option>
 							<option value="album_per_skipcount">- Most skipped album</option>
-							<option value="album_per_year">- Album per year</option>	
+							<option value="album_per_year">- Album per year</option>
+							<option value="album_per_genre">- Albums per genre</option>	
 						</select>
 					</td>
 					<td>
 						<select name="dropdown" value="options" onchange="doPost();">
 							<option disabled selected>Genre <?php echo "(".$overall_genres.")"; ?></option>	
 							<option value="genre_per_playcount">- Most played genre</option>
-							<option value="artist_per_genre">- Artists per genre</option>
-							<option value="track_per_genre">- Tracks per genre</option>
-							<option value="genre_per_playtime">- Approximate time per genre</option>
+							<option value="genre_per_playtime">- Approximate time per genre</option>					
 						</select>
 					</td>
 					<td><input hidden type="Submit" Name="Submit1" value="Load"></td>
@@ -465,7 +490,7 @@
 			// ARTISTS
 			case "artist_per_genre":
 				$graph_title = "Artist per Genre";
-				$sql_statement = "SELECT distinct genre, COUNT(distinct artist) FROM songs WHERE unavailable != '1' GROUP BY genre ORDER by COUNT(artist) DESC";
+				$sql_statement = "SELECT distinct genre, COUNT(distinct artist) FROM songs WHERE unavailable != '1' GROUP BY genre ORDER by COUNT(distinct artist) DESC";
 				$cols = 3;
 				$tableColumns = "<th>No.</th><th>Genre</th><th>Artists</th>";
 				$graph = true;
@@ -544,7 +569,17 @@
 				$tableColumns = "<th>No.</th><th>Genre</th><th>Available playtime (days)</th>";
 				$graph = true;
 			break;
-																						
+
+
+			case "album_per_genre":
+				$graph_title = "Albums per  Genre";
+				$sql_statement = "SELECT distinct genre, COUNT(distinct album) FROM songs WHERE unavailable != '1' GROUP BY genre ORDER by COUNT(distinct album) DESC";
+				$cols = 3;
+				$tableColumns = "<th>No.</th><th>Genre</th><th>Albums</th>";
+				$graph = true;
+			break;
+				
+
 			// SPECIAL-CASE ;)
 			case "";
 				$graph_title = "";
