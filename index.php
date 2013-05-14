@@ -594,7 +594,7 @@
 				switch ($cols)
 				{
 					case "3":
-						if($selected_stats == "genre_per_playtime")
+						if($selected_stats == "42")
 						{
 							echo "<tr class='odd gradeU'>";
 								echo "<td>".$hits."</td>";
