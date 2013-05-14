@@ -228,6 +228,7 @@
 						<select name="q" value="options" onchange="doPost();">
 							<option disabled selected>Artists <?php echo "(".$overall_artists.")"; ?></option>			
 							<option value="21">- Artist with most tracks</option>
+							<option value="27">- Artist with most albums</option>
 							<option value="22">- Artists per genre</option>
 							<option value="23">- Most played artist</option>
 							<option value="24">- Most skipped artist</option>
@@ -454,6 +455,14 @@
 				$graph = false;
 			break;
 										
+			case "25":
+				$graph_title = "Best rated artist";
+				$sql_statement = "SELECT distinct artist, count(*), sum(rating)/count(*), sum(rating) FROM songs WHERE rating > 0  and unavailable != '1' GROUP BY artist ORDER BY sum(rating)/count(*) desc";
+				$cols = 5;
+				$tableColumns = "<th>No.</th><th>Artist</th><th>Rated Tracks</th><th>Average Rating</th><th>Overall Rating</th>";
+				$graph = false;
+			break;
+
 			case "26":
 				$graph_title = "Best scored artist";
 				$sql_statement = "SELECT distinct artist, count(*), sum(score)/count(*), sum(score) FROM songs WHERE score > 0 and unavailable != '1' GROUP BY artist HAVING count(*) > 9 ORDER BY sum(score)/count(*) desc";
@@ -462,13 +471,14 @@
 				$graph = false;
 			break;
 
-			case "25":
-				$graph_title = "Best rated artist";
-				$sql_statement = "SELECT distinct artist, count(*), sum(rating)/count(*), sum(rating) FROM songs WHERE rating > 0  and unavailable != '1' GROUP BY artist ORDER BY sum(rating)/count(*) desc";
-				$cols = 5;
-				$tableColumns = "<th>No.</th><th>Artist</th><th>Rated Tracks</th><th>Average Rating</th><th>Overall Rating</th>";
+			case "27":
+				$graph_title = "Artist with most albums";
+				$sql_statement = "SELECT distinct artist, COUNT(distinct album) FROM songs WHERE unavailable != '1' and artist!='Various Artists' GROUP BY artist ORDER by COUNT(distinct album) DESC";
+				$cols = 3;
+				$tableColumns = "<th>No.</th><th>Artist</th><th>Albums</th>";
 				$graph = false;
 			break;
+
 			
 			//
 			// ALBUM
