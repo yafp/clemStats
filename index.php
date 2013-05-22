@@ -43,14 +43,6 @@
 	function dbOptions()
 	{
 		alert("Everything is fine.");
-
-		/*
-		var r=confirm("dummy: Do you want to backup your Clementine database?");
-		if (r==true)
-		{
-	
-		}
-		*/
 	}
 	</script>
 
@@ -203,8 +195,6 @@
 					}
 			?>
 
-
-
 			<table border="0" >
 				<tr>
 					<td colspan="4"><b>version: </b><?php echo $version; ?>&nbsp;|&nbsp;<a href="https://github.com/macfidelity/clemStats/wiki">Wiki</a>&nbsp;|&nbsp;<a href="https://github.com/macfidelity/clemStats/issues">Issues</a>&nbsp;|&nbsp;Page generated at: <?php echo $now; ?></td>
@@ -214,42 +204,43 @@
 						<select name="q" value="options" onchange="doPost();">
 							<option disabled selected>Tracks <?php echo "(".$tracks_all.")"; ?></option>	
 							<option value="11">- Last played</option>
-							<option value="12">- Most played track</option>
-							<option value="13">- Most skipped track</option>
-							<option value="14">- Best rated track</option>
-							<option value="15">- Best scored track</option>
-							<option value="16">- Tracks per year</option>
-							<option value="17">- Tracks per bitrate</option>
-							<option value="18">- Tracks per genre</option>
+							<option value="12">- Most played</option>
+							<option value="13">- Most skipped</option>
+							<option value="14">- Best rated</option>
+							<option value="15">- Best scored</option>
+							<option value="16">- By year</option>
+							<option value="17">- By bitrate</option>
+							<option value="18">- By genre</option>
 							<option value="19">- All tracks (slow)</option>
 						</select>
 					</td>
 					<td>
 						<select name="q" value="options" onchange="doPost();">
 							<option disabled selected>Artists <?php echo "(".$overall_artists.")"; ?></option>			
-							<option value="21">- Artist with most tracks</option>
-							<option value="27">- Artist with most albums</option>
-							<option value="22">- Artists per genre</option>
-							<option value="23">- Most played artist</option>
-							<option value="24">- Most skipped artist</option>
-							<option value="25">- Best rated artist</option>
-							<option value="26">- Best scored artist</option>
+							<option value="21">- Most tracks</option>
+							<option value="27">- Most albums</option>
+							<option value="22">- per genre</option>
+							<option value="23">- Most played</option>
+							<option value="24">- Most skipped</option>
+							<option value="25">- Best rated</option>
+							<option value="26">- Best scored</option>
+							<option value="28">- By approx. playtime</option>
 						</select>
 					</td>
 					<td>
 						<select name="q" value="options" onchange="doPost();">
 							<option disabled selected>Albums <?php echo "(".$overall_albums.")"; ?></option>	
-							<option value="31">- Most played album</option>
-							<option value="32">- Most skipped album</option>
-							<option value="33">- Album per year</option>
-							<option value="34">- Albums per genre</option>	
+							<option value="31">- Most played</option>
+							<option value="32">- Most skipped</option>
+							<option value="33">- By year</option>
+							<option value="34">- By genre</option>	
 						</select>
 					</td>
 					<td>
 						<select name="q" value="options" onchange="doPost();">
 							<option disabled selected>Genre <?php echo "(".$overall_genres.")"; ?></option>	
-							<option value="41">- Most played genre</option>
-							<option value="42">- Approximate time per genre</option>					
+							<option value="41">- Most played</option>
+							<option value="42">- By approx. playtime</option>					
 						</select>
 					</td>
 					<td><input hidden type="Submit" Name="s" value="go"></td>
@@ -291,6 +282,7 @@
 						else
 						{
 							//echo "<b>Notice:</b> dbus pecl extension is loaded.";
+
 							//$dbus = new Dbus(Dbus::BUS_SESSION, true);
 							//$dbus = new Dbus(Dbus::BUS_SESSION); 
 
@@ -411,7 +403,7 @@
 				$graph = true;
 			break;
 
-			// ALL TRACKS
+			// Special - ALL TRACKS - might be slow (big collection results in slow datatable)
 			case "19":
 				$graph_title = "All Tracks";
 				$sql_statement = "SELECT artist, album, title, genre, year FROM songs WHERE unavailable != '1' ORDER BY album";
@@ -479,7 +471,14 @@
 				$graph = false;
 			break;
 
-			
+			case "28":
+				$graph_title = "Artist with most approx. playtime";
+				$sql_statement = "SELECT distinct artist, sum(length) FROM songs WHERE unavailable != '1' and artist!='Various Artists' GROUP BY artist ORDER by SUM(length) DESC";
+				$cols = 3;
+				$tableColumns = "<th>No.</th><th>Artist</th><th>Approx. playtime (in days)</th>";
+				$graph = false;
+			break;
+
 			//
 			// ALBUM
 			//
@@ -551,8 +550,8 @@
 		{
 			echo '<div id="graph1">';
 			echo '<h3>Graph</h3>';
+			echo '<input type="button" Name="hideButton" value="Hide Graph" onclick="doHide();"><br>';
 			echo '<canvas id="myChart" width="400" height="200"></canvas>';
-			echo '<input type="button" Name="hideButton" value="Hide Graph" onclick="doHide();">';
 			echo '</div>';
 		}
 
@@ -567,7 +566,7 @@
 		// do query & output
 		if($sql_statement != "")
 		{
-			echo "<h3>".$graph_title."</h3>";
+			echo "<h3>".$graph_title." <a href=''><img src='img/reload.png' width='20' title='Reload this query'></a></h3>";
 			$result = $db->query($sql_statement);	// run sql query
 			echo '<table cellpadding="0" cellspacing="0" border="0" class="display" id="example">';
 			echo "<thead><tr>$tableColumns</tr></thead><tbody>";
@@ -604,7 +603,7 @@
 				switch ($cols)
 				{
 					case "3":
-						if($selected_stats == "42")
+						if($selected_stats == "42" or $selected_stats == "28")
 						{
 							echo "<tr class='odd gradeU'>";
 								echo "<td>".$hits."</td>";
@@ -773,10 +772,12 @@
 
 				if($img_pic[0] != '')  // show random cover
 				{
-					echo "<img src=".$img_pic[0]." width='500' border='1'>";
+					echo "<img src=".$img_pic[0]." width='500' border='1' title='Cover is fetched via internet.'>";
 				}
+			}
 
-				// further links
+			if($enableLinksForRandomArtist == true)
+			{
 				echo "<br><b>More about this artist:</b>";
 				echo "<br><a href='http://en.wikipedia.org/wiki/".urlencode($random_artist)."' target='_new'>Wikipedia</a>";						// wikipedia
 				echo "&nbsp;<a href='http://www.youtube.com/results?search_query=".$random_artist."' target='_new'>Youtube</a>";		// youtube
@@ -786,8 +787,12 @@
 				echo "&nbsp;<a href='http://www.last.fm/search?q=".$random_artist."' target='_new'>last.fm</a>";						// last.fm
 				echo "&nbsp;<a href='http://www.whosampled.com/search/artists/?q=".$random_artist."' target='_new'>WhoSampled</a>";						// whosampled
 			}
+
 		echo "</div>";
 		}
-
+		else // random artist is false
+		{
+			echo "Blank page?<br><br>Consider enabling the randomartist option in conf/settings.php.";
+		}
 	}	
 ?>
