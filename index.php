@@ -259,9 +259,7 @@
 
 			<!-- No JavaScript support? -->
 			<noscript>
-				<h3>Warning</h3>
-				<font color="red">Your browser does not support JavaScript - which is needed for clemStats. Please enable it and then reload this page.</font><br>
-				<img src="img/noscript.gif" alt="image description">
+				<meta HTTP-EQUIV="REFRESH" content="0; url=nojs.php"> 
 			</noscript> 
 
 				<br>
@@ -792,7 +790,8 @@
 		}
 		else // random artist is false
 		{
-			echo "Blank page?<br><br>Consider enabling the randomartist option in conf/settings.php.";
+			echo "<h3><center>blank page?</center></h3>";
+			echo "<center>Consider enabling the randomartist option in conf/settings.php<br>or<br>just select one of the pre-defined sql-queries in the head to have even more fun.<br><br><br><br><br><br><br><br><br><br><br></center>";
 		}
 	}	
 ?>
