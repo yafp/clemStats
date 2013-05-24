@@ -6,7 +6,7 @@
 	// GENERAL
 	$appname	= "clemStats";
 	$tagline	= "a clementine database analyzer";
-	$version 	= "20130523.01";
+	$version 	= "20130524.01";
 
 	// CONFIG
 	$dbpath		= '/home/fidel/.config/Clementine/clementine.db';		// not yet in use

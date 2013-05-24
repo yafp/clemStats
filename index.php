@@ -8,7 +8,7 @@
 		echo "<title>".$appname." - ".$version." - ".$tagline."</title>";	// generate html header-title
 	?>
 
-	<meta name="keywords" content="clementine" />
+	<meta name="keywords" content="clementine, stats, statistics, analyzer, database, music, library, lib" />
 	<meta name="description" content="clementine stats" />
 	<link rel='shortcut icon' type='image/x-icon' href='img/favicon.ico' />
 
@@ -79,7 +79,6 @@
 		                  }
 		               ]
 				},
-				
 				"bSortClasses": false, // should speed it up a little - TESTING
 				"aLengthMenu": [[10, 25, 50, 100, 500, -1], [10, 25, 50, 100, 500, "All"]],
 			    "iDisplayLength": 10,
@@ -118,7 +117,6 @@
 </head>
 
 
-
 <body>
 	<form name ="form1" Method ="GET" Action ="index.php">
 	<div id="wrapper">
@@ -132,7 +130,7 @@
 			<?php
 				echo '<div id="header_info">';
 
-					// insert old basic table here
+					// if clementine datbase configured in settings.php is valid
 					if (file_exists($dbpath)) 
 					{
 						// sqlite stuff - access clementine db file
@@ -195,6 +193,7 @@
 					}
 			?>
 
+			<!-- MAIN NAVIGATION TABLE INCLUDING THE VERSION AND THE QUERY-DROPDOWNS -->
 			<table border="0" >
 				<tr>
 					<td colspan="4"><b>version: </b><?php echo $version; ?>&nbsp;|&nbsp;<a href="https://github.com/macfidelity/clemStats/wiki">Wiki</a>&nbsp;|&nbsp;<a href="https://github.com/macfidelity/clemStats/issues">Issues</a>&nbsp;|&nbsp;Page generated at: <?php echo $now; ?></td>
@@ -219,11 +218,11 @@
 							<option disabled selected>Artists <?php echo "(".$overall_artists.")"; ?></option>			
 							<option value="21">- Most tracks</option>
 							<option value="27">- Most albums</option>
-							<option value="22">- per genre</option>
 							<option value="23">- Most played</option>
 							<option value="24">- Most skipped</option>
 							<option value="25">- Best rated</option>
 							<option value="26">- Best scored</option>
+							<option value="22">- By genre</option>
 							<option value="28">- By approx. playtime</option>
 						</select>
 					</td>
@@ -256,13 +255,12 @@
 
 		<!-- #content-->
 		<div id="content">
-
+			<br>
 			<!-- No JavaScript support? -->
 			<noscript>
-				<meta HTTP-EQUIV="REFRESH" content="0; url=nojs.php"> 
+				<meta HTTP-EQUIV="REFRESH" content="0; url=nojs.php">  <!--  redirect to error page -->
 			</noscript> 
-
-				<br>
+				
 
 				<?php 
 					//
@@ -294,7 +292,6 @@
 							// terminal: qdbus org.mpris.clementine /Player org.freedesktop.MediaPlayer.Pause
 							// terminal:
 						}
-
 					} 
 					else 
 					{
@@ -307,8 +304,6 @@
 </html>
 
 
-
-
 <?php
 	//
 	// GET: do we get something or not?
@@ -317,9 +312,10 @@
 	{
 		// init stuff
 		include "conf/settings.php";			// contains some core-strings
-		$sql_statement = "";
+		$sql_statement = "";					
 		$hits = 0;								// counting results
-		$selected_stats = $_GET["q"];
+		$selected_stats = $_GET["q"];			// selected query id
+
 		// sqlite handling
 		class MyDB extends SQLite3
 		{
@@ -542,17 +538,6 @@
 		}
 		// endswitch case
 
-
-		// chart.js - generate a Graph placeholder if needed
-		if($graph == true)
-		{
-			echo '<div id="graph1">';
-			echo '<h3>Graph</h3>';
-			echo '<input type="button" Name="hideButton" value="Hide Graph" onclick="doHide();"><br>';
-			echo '<canvas id="myChart" width="400" height="200"></canvas>';
-			echo '</div>';
-		}
-
 		?>
 
 		<script>
@@ -565,16 +550,25 @@
 		if($sql_statement != "")
 		{
 			echo "<h3>".$graph_title." <a href=''><img src='img/reload.png' width='20' title='Reload this query'></a></h3>";
+
+			if($graph == true)
+			{
+				// chart.js - generate a Graph placeholder if needed
+				echo '<div id="graph1">';
+				echo '<input type="button" Name="hideButton" value="Hide Graph" onclick="doHide();"><br>';
+				echo '<canvas id="myChart" width="400" height="200"></canvas>';
+				echo '</div>';
+			}
+
 			$result = $db->query($sql_statement);	// run sql query
 			echo '<table cellpadding="0" cellspacing="0" border="0" class="display" id="example">';
 			echo "<thead><tr>$tableColumns</tr></thead><tbody>";
 																							
-			while ($row = $result->fetchArray()) 
+			while ($row = $result->fetchArray()) // handle the data
 			{
-				// add data to array for graph
-				if($graph == true)
+				if($graph == true)   // add data to array for graph if graph is enabled
 				{
-					$randomColor = sprintf("#%x%x%x", rand(200,240), rand(50,200), rand(20,70));
+					$randomColor = sprintf("#%x%x%x", rand(200,240), rand(50,200), rand(20,70)); // random color creation for each graph element
 			?>
 					<script>
 						// prepare chart-js graph
@@ -669,7 +663,6 @@
 			// table footer
 			echo '<tfoot>';
 			echo '<tr>';
-
 			switch ($cols)
 			{
 					case "3":	
@@ -732,11 +725,11 @@
 			}
 		}
 	}
-	else
+	else // showing random page
 	{
-		if($enableRandomAlbum == true)
+		if($enableRandomAlbum == true) // random albumpick enabled?
 		{
-			echo "<h3>Random pick <a href='index.php'><img src='img/reload.png' width='20' title='Refresh the random pick'></a></h3>";
+			echo "<h3>Random album pick <a href='index.php'><img src='img/reload.png' width='20' title='Refresh the random pick'></a></h3>";
 
 			$result5 = $db2->query('SELECT artist, album, art_automatic, year, genre FROM songs WHERE unavailable !="1" and artist != "" and album != "" ORDER BY RANDOM() LIMIT 1');
 			while ($row5 = $result5->fetchArray()) 
@@ -757,7 +750,23 @@
 			}
 			echo "&nbsp;<b>Genre:</b> ".$random_genre."<br>";
 
-			if($enableRandomCover == true)
+			// show playcount of this album
+			$result6 = $db2->query("SELECT distinct album, sum(playcount), artist FROM songs WHERE  unavailable != '1'  and album='$random_album' and artist='$random_artist' ORDER BY sum(playcount) desc ");
+			while ($row6 = $result6->fetchArray()) 
+			{
+				$random_album_playcount = $row6[1];	
+			} 
+
+			if($random_album_playcount == 0)
+			{
+				echo "<b>Listened: </b> 0 songs of this album.";
+			}
+			else
+			{
+				echo "<b>Listened: </b>to one or more songs of this album (Sum: ".$random_album_playcount.")";
+			}
+			
+			if($enableRandomCover == true) // Random Cover enabled?
 			{
 				$searchtag = $random_artist." ".$random_album;
 				$searchtag = urlencode($searchtag);
@@ -774,7 +783,7 @@
 				}
 			}
 
-			if($enableLinksForRandomArtist == true)
+			if($enableLinksForRandomArtist == true) // www-links enabled?
 			{
 				echo "<br><b>More about this artist:</b>";
 				echo "<br><a href='http://en.wikipedia.org/wiki/".urlencode($random_artist)."' target='_new'>Wikipedia</a>";						// wikipedia
@@ -785,13 +794,12 @@
 				echo "&nbsp;<a href='http://www.last.fm/search?q=".$random_artist."' target='_new'>last.fm</a>";						// last.fm
 				echo "&nbsp;<a href='http://www.whosampled.com/search/artists/?q=".$random_artist."' target='_new'>WhoSampled</a>";						// whosampled
 			}
-
-		echo "</div>";
+			echo "</div>";
 		}
 		else // random artist is false
 		{
 			echo "<h3><center>blank page?</center></h3>";
-			echo "<center>Consider enabling the randomartist option in conf/settings.php<br>or<br>just select one of the pre-defined sql-queries in the head to have even more fun.<br><br><br><br><br><br><br><br><br><br><br></center>";
+			echo "<center>Consider enabling the random album pick option in conf/settings.php<br>or<br>just select one of the pre-defined sql-queries in the head to have even more fun.<br><br><br><br><br><br><br><br><br><br><br></center>";
 		}
 	}	
 ?>
