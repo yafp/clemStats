@@ -25,6 +25,55 @@
 	<script type="text/javascript" language="javascript" src="js/DataTables-1.9.4/extras/TableTools/media/js/TableTools.min.js"></script>
 	<script src="js/Chart.js_Regaddi/Chart.min_20130509.js"></script>
 	<script>
+
+	// dbus - control function
+	function doPlay() 
+	{ 
+		$.post("inc/control.php", { task: "Play" } );
+	}
+
+	function doPause() 
+	{ 
+		$.post("inc/control.php", { task: "Pause" } );
+	}
+
+	function doStop() 
+	{ 
+		$.post("inc/control.php", { task: "Stop" } );
+	}  
+
+	function doNext() 
+	{ 
+		$.post("inc/control.php", { task: "Next" } );
+	}
+
+	function doPrev() 
+	{ 
+		$.post("inc/control.php", { task: "Prev" } );
+	} 
+
+	function doOSD() 
+	{ 
+		$.post("inc/control.php", { task: "OSD" } );
+	}
+
+	function doMute() 
+	{ 
+		$.post("inc/control.php", { task: "Mute" } );
+	} 
+
+	function doVolUp() 
+	{ 
+		$.post("inc/control.php", { task: "VolUp" } );
+	}
+
+	function doVolDown() 
+	{ 
+		$.post("inc/control.php", { task: "VolDown" } );
+	} 
+
+
+	// other non-dbus related functions
 	function doPost() 
 	{ 
 		form1.s.click();
@@ -194,7 +243,7 @@
 			?>
 
 			<!-- MAIN NAVIGATION TABLE INCLUDING THE VERSION AND THE QUERY-DROPDOWNS -->
-			<table border="0" >
+			<table border="0">
 				<tr>
 					<td colspan="4"><b>version: </b><?php echo $version; ?>&nbsp;|&nbsp;<a href="https://github.com/macfidelity/clemStats/wiki">Wiki</a>&nbsp;|&nbsp;<a href="https://github.com/macfidelity/clemStats/issues">Issues</a>&nbsp;|&nbsp;Page generated at: <?php echo $now; ?></td>
 				</tr>
@@ -244,8 +293,43 @@
 					</td>
 					<td><input hidden type="Submit" Name="s" value="go"></td>
 				</tr>
-				<tr><td colspan="2">Tracks played: <?php echo $tracks_played." ".round($tracks_played_ratio, 2)."%"; ?></td></tr>
-				<tr><td colspan="2">Approximate collection time: <?php echo $tracks_playtime." days"; ?></td></tr>
+				<tr>
+					<td colspan="2">Tracks played: <?php echo $tracks_played." ".round($tracks_played_ratio, 2)."%"; ?></td>
+					<td colspan="2">Approximate collection time: <?php echo $tracks_playtime." days"; ?></td>
+				</tr>
+
+				<?php
+
+					if (!extension_loaded('dbus')) 
+					{
+  						//die('Extension dbus is not loaded');
+  						echo "<font color='red'><b>Error:</b></font> dbus pecl extension is NOT loaded. You need that for the dbus-hackery.";
+					}
+					else
+					{
+						if($enableDBusHackery == true)
+						{
+							echo '
+							<tr>
+								<td colspan="4">
+									<a href="#" onClick="doPlay()"><img src="img/control_icons/125220-matte-white-square-icon-media-a-media22-arrow-forward1.png" width="20" title="play"></a>
+									<a href="#" onClick="doPause()"><img src="img/control_icons/125225-matte-white-square-icon-media-a-media27-pause-sign.png" width="20" title="pause"></a>
+									<a href="#" onClick="doStop()"><img src="img/control_icons/125226-matte-white-square-icon-media-a-media28-stop.png" width="20" title="stop"></a>
+									&nbsp;&nbsp;&nbsp;&nbsp;
+									<a href="#" onClick="doPrev()"><img src="img/control_icons/125223-matte-white-square-icon-media-a-media25-arrows-skip-back.png" width="20" title="prev"></a>
+									<a href="#" onClick="doNext()"><img src="img/control_icons/125224-matte-white-square-icon-media-a-media26-arrows-skip-forward.png" width="20" title="next"></a>
+									&nbsp;&nbsp;&nbsp;&nbsp;
+									<a href="#" onClick="doMute()"><img src="img/control_icons/125230-matte-white-square-icon-media-a-media292-speaker-volume-right.png" width="20" title="mute"></a>
+									<a href="#" onClick="doVolUp()"><img src="img/control_icons/125228-matte-white-square-icon-media-a-media291-volume1.png" width="20" title="vol up"></a>
+									<a href="#" onClick="doVolDown()"><img src="img/control_icons/125229-matte-white-square-icon-media-a-media292-minus3.png" width="20" title="vol down"></a>
+									&nbsp;&nbsp;&nbsp;&nbsp;
+									<a href="#" onClick="doOSD()"><img src="img/control_icons/125267-matte-white-square-icon-media-music-piano-keys.png" width="20" title="show OSD"></a>
+								</td>
+							</tr>';
+						}
+					}
+				?>
+
 			</table>
 		</div>
 		
@@ -273,24 +357,83 @@
 						if (!extension_loaded('dbus')) 
 						{
   							//die('Extension dbus is not loaded');
-  							//echo "<b>Error:</b> dbus pecl extension is NOT loaded. It is not needed so far.";
+  							//echo "<b>Error:</b> dbus pecl extension is NOT loaded.";
 						}
 						else
 						{
 							//echo "<b>Notice:</b> dbus pecl extension is loaded.";
-
-							//$dbus = new Dbus(Dbus::BUS_SESSION, true);
-							//$dbus = new Dbus(Dbus::BUS_SESSION); 
 
 							// basic clemdbus infos:
 							// http://wiki.clementine-player.googlecode.com/git/MPRIS.wiki
 
 							// get current track:
 							// terminal: qdbus org.mpris.clementine /Player org.freedesktop.MediaPlayer.GetMetadata
-							//
-							// play/pause:
-							// terminal: qdbus org.mpris.clementine /Player org.freedesktop.MediaPlayer.Pause
-							// terminal:
+
+							if($enableDBusHackery == true)
+							{
+								putenv("DISPLAY=:0");	
+
+								$dbus = new Dbus(Dbus::BUS_SESSION, true);
+								$clem = $dbus->createProxy(
+	            					'org.mpris.clementine',
+	            					'/Player',
+	            					'org.freedesktop.MediaPlayer'
+	          					); 
+
+								// do it
+								//
+								//$nextAction = $clem->Play();
+								//echo "<h3>Clementine status</h3>";
+								
+
+								echo "<b>Status: </b>";
+								$nextAction = $clem->GetStatus();
+
+								// we need to output it - otherwise its not accessible - but we hide it using ob_start/ob_end_clean
+								ob_start();
+								print "<pre>";
+								print_r($nextAction);
+								print "</pre>";
+								ob_end_clean();
+
+								//
+								// Is clementine playing, paused or stopped?
+								//
+								if($nextAction->struct[0] == "0")
+								{
+									echo "Playing ";
+
+									// what is it playing?
+									echo "<b>Track: </b>";
+									$nextAction2 = $clem->GetMetadata();
+
+									ob_start();
+									print "<pre>";
+									print_r($nextAction2);
+									print "</pre>";
+									ob_end_clean();
+
+									print_r($nextAction2->dict['title']);
+									//print_r($nextAction2->dict['title']);
+								}
+								
+								if($nextAction->struct[0] == 1)
+								{
+									echo "Paused";
+								}
+
+								if($nextAction->struct[0] == 2)
+								{
+									echo "Stopped";
+								}
+
+
+								}
+
+
+							
+							
+							
 						}
 					} 
 					else 
@@ -763,7 +906,7 @@
 			}
 			else
 			{
-				echo "<b>Listened: </b>to one or more songs of this album (Sum: ".$random_album_playcount.")";
+				echo "<b>Listened: </b>one or more songs of this album (Track-Playcount: ".$random_album_playcount.")";
 			}
 			
 			if($enableRandomCover == true) // Random Cover enabled?
@@ -779,7 +922,7 @@
 
 				if($img_pic[0] != '')  // show random cover
 				{
-					echo "<img src=".$img_pic[0]." width='500' border='1' title='Cover is fetched via internet.'>";
+					echo "<img src=".$img_pic[0]." width='300' border='1' title='Cover is fetched via internet.'>";
 				}
 			}
 
@@ -794,6 +937,7 @@
 				echo "&nbsp;<a href='http://www.last.fm/search?q=".$random_artist."' target='_new'>last.fm</a>";						// last.fm
 				echo "&nbsp;<a href='http://www.whosampled.com/search/artists/?q=".$random_artist."' target='_new'>WhoSampled</a>";						// whosampled
 			}
+
 			echo "</div>";
 		}
 		else // random artist is false
