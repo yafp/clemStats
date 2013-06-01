@@ -108,7 +108,12 @@
 	function doVolDown() 
 	{ 
 		$.post("inc/dbus-control-buttons.php", { task: "VolDown" } );
-	} 
+	}
+
+	function doVol100() 
+	{ 
+		$.post("inc/dbus-control-buttons.php", { task: "Vol100" } );
+	}  
 
 
 	// other non-dbus related functions
@@ -360,6 +365,7 @@
 									<a href="#" onClick="doMute()"><img src="img/control_icons/125230-matte-white-square-icon-media-a-media292-speaker-volume-right.png" width="20" title="mute"></a>
 									<a href="#" onClick="doVolUp()"><img src="img/control_icons/125228-matte-white-square-icon-media-a-media291-volume1.png" width="20" title="vol up"></a>
 									<a href="#" onClick="doVolDown()"><img src="img/control_icons/125229-matte-white-square-icon-media-a-media292-minus3.png" width="20" title="vol down"></a>
+									<a href="#" onClick="doVol100()"><img src="img/control_icons/125273-matte-white-square-icon-media-music-speaker1.png" width="20" title="vol 100"></a>
 									&nbsp;&nbsp;&nbsp;&nbsp;
 									<a href="#" onClick="doOSD()"><img src="img/control_icons/125267-matte-white-square-icon-media-music-piano-keys.png" width="20" title="show OSD"></a>
 								</td>

@@ -26,7 +26,12 @@
 	VolumeUp()
 	*/
 
+	include "../inc/dbus-functions.php";
+
+
 	$task = $_POST['task'];
+
+	putenv("DISPLAY=:0");
 
 	$dbus = new Dbus(Dbus::BUS_SESSION, true);
 							
@@ -70,11 +75,27 @@
 		    break;
 
 		case "VolUp":
-			$nextAction = $clem->VolumeUp();
+			$nextAction = $clem->VolumeUp(5);
+			if(isClemPlaying() == false)
+			{
+				$nextAction = $clem->Play();
+			}
 		    break;
 
 		case "VolDown":
-			$nextAction = $clem->VolumeDown();
+			$nextAction = $clem->VolumeDown(5);
+			if(isClemPlaying() == false)
+			{
+				$nextAction = $clem->Play();
+			}
+		    break;
+
+		case "Vol100":
+			$nextAction = $clem->VolumeSet(100);
+			if(isClemPlaying() == false)
+			{
+				$nextAction = $clem->Play();
+			}
 		    break;
 	}
 
