@@ -4,7 +4,7 @@
 	<meta charset="utf-8" />
 
 	<?php 
-		include "conf/settings.php";
+		include "inc/version.php";
 		echo "<title>".$appname." - ".$version." - ".$tagline."</title>";	// generate html header-title
 	?>
 

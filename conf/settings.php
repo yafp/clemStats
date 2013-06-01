@@ -1,17 +1,8 @@
 <?php
 	// ########################################################################################
-	// GENERAL
-	// ########################################################################################
-	$appname	= "clemStats";
-	$tagline	= "a clementine database analyzer";
-	$version 	= "20130528.01";
-
-
-
-	// ########################################################################################
 	// CLEMENTINE DATABASE 
 	// ########################################################################################
-	$dbpath		= '/home/fidel/.config/Clementine/clementine.db';		// not yet in use
+	$dbpath		= '/home/fidel/.config/Clementine/clementine.db';		// path to your clemetine database
 
 
 
@@ -19,10 +10,10 @@
 	// RANDOM PICK 
 	// ########################################################################################
 	// Random album & cover on main page when no search occured
-	$enableRandomAlbum = true;			// random local album
-	// next values depend on $enableRandomAlbum (true)
-	$enableRandomCover = true;			// cover via google search - needs internet access.
-	$enableLinksForRandomArtist = true;	// displays some www-links for additional informations about the random artist.
+	$enableRandomAlbum = true;			// random local album - true or false
+	// next values depend on $enableRandomAlbum = true
+	$enableRandomCover = true;			// cover via google search - needs internet access. true or false
+	$enableLinksForRandomArtist = true;	// displays some www-links for additional informations about the random artist. true or false
 
 
 
@@ -38,5 +29,6 @@
 	// and results in
 	// - dbus control buttons for clementine (play, pause, stop, next, prev etc)
 	// - clemStats displaying the clementine status (playing, paused, stopped)
-	$enableDBusHackery = true;
+	$enableDBusHackery = true; // true or false
+	$reloadInterval = 20;	// value in seconds - defines when the page is reloaded to update the playing informations. 0 = reload disabled
 ?>

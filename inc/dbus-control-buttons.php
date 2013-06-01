@@ -1,8 +1,13 @@
 <?php
-	// Methods:
-	//
 	/*
-	GEtCaps
+
+	//
+	// Handles the dbus control buttons
+	//
+
+	// Reminder: Available Methods
+	//
+	GetCaps
 	GetMetadata()
 	GetStatus()
 	Mute()
@@ -22,7 +27,6 @@
 	*/
 
 	$task = $_POST['task'];
-
 
 	$dbus = new Dbus(Dbus::BUS_SESSION, true);
 							

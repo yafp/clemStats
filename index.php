@@ -5,7 +5,45 @@
 
 	<?php 
 		include "conf/settings.php";
+		include "inc/version.php";
+
 		echo "<title>".$appname." - ".$version." - ".$tagline."</title>";	// generate html header-title
+
+		if (!extension_loaded('dbus')) 
+		{
+  			//die('Extension dbus is not loaded');
+  			//echo "<font color='red'><b>Error:</b></font> dbus pecl extension is NOT loaded. You need that for the dbus-hackery.";
+		}
+		else // dbus pecl extension is loaded
+		{
+			if($enableDBusHackery == true) // user enabled dbus hackery in settings.conf
+			{
+				include "inc/dbus-functions.php";
+	
+				// Check if Clementine is currently playing - if so reload page after x seconds to update playing informations
+				if(isClemPlaying() == false)
+				{
+					// clementine is not playing - no need to reload the page
+				}
+				else
+				{
+					// only reload page if it isnt currently displaying the slow query 'All Tracks'
+					if(isset($_GET["q"]))
+					{	
+						$selected_stats = $_GET["q"];
+						if($selected_stats != "19")
+						{
+							reloadClemStats();
+						}
+					}
+					else // means no query was selected - aka: default page - aka: random pick
+					{
+						reloadClemStats();
+					}
+
+				}
+			}
+		}
 	?>
 
 	<meta name="keywords" content="clementine, stats, statistics, analyzer, database, music, library, lib" />
@@ -29,47 +67,47 @@
 	// dbus - control function
 	function doPlay() 
 	{ 
-		$.post("inc/control.php", { task: "Play" } );
+		$.post("inc/dbus-control-buttons.php", { task: "Play" } );
 	}
 
 	function doPause() 
 	{ 
-		$.post("inc/control.php", { task: "Pause" } );
+		$.post("inc/dbus-control-buttons.php", { task: "Pause" } );
 	}
 
 	function doStop() 
 	{ 
-		$.post("inc/control.php", { task: "Stop" } );
+		$.post("inc/dbus-control-buttons.php", { task: "Stop" } );
 	}  
 
 	function doNext() 
 	{ 
-		$.post("inc/control.php", { task: "Next" } );
+		$.post("inc/dbus-control-buttons.php", { task: "Next" } );
 	}
 
 	function doPrev() 
 	{ 
-		$.post("inc/control.php", { task: "Prev" } );
+		$.post("inc/dbus-control-buttons.php", { task: "Prev" } );
 	} 
 
 	function doOSD() 
 	{ 
-		$.post("inc/control.php", { task: "OSD" } );
+		$.post("inc/dbus-control-buttons.php", { task: "OSD" } );
 	}
 
 	function doMute() 
 	{ 
-		$.post("inc/control.php", { task: "Mute" } );
+		$.post("inc/dbus-control-buttons.php", { task: "Mute" } );
 	} 
 
 	function doVolUp() 
 	{ 
-		$.post("inc/control.php", { task: "VolUp" } );
+		$.post("inc/dbus-control-buttons.php", { task: "VolUp" } );
 	}
 
 	function doVolDown() 
 	{ 
-		$.post("inc/control.php", { task: "VolDown" } );
+		$.post("inc/dbus-control-buttons.php", { task: "VolDown" } );
 	} 
 
 
@@ -193,7 +231,8 @@
 						}
 
 						$db2 = new MyDB2();
-											 
+
+					 
 						// Show: TRACKS
 						$result5 = $db2->query('SELECT COUNT(*) FROM songs WHERE unavailable !="1"');
 						while ($row5 = $result5->fetchArray()) 
@@ -302,7 +341,6 @@
 
 					if (!extension_loaded('dbus')) 
 					{
-  						//die('Extension dbus is not loaded');
   						echo "<font color='red'><b>Error:</b></font> dbus pecl extension is NOT loaded. You need that for the dbus-hackery.";
 					}
 					else
@@ -359,52 +397,23 @@
   							//die('Extension dbus is not loaded');
   							//echo "<b>Error:</b> dbus pecl extension is NOT loaded.";
 						}
-						else
+						else // extension is loaded
 						{
-							//echo "<b>Notice:</b> dbus pecl extension is loaded.";
-
-							// basic clemdbus infos:
-							// http://wiki.clementine-player.googlecode.com/git/MPRIS.wiki
-
-							// get current track:
-							// terminal: qdbus org.mpris.clementine /Player org.freedesktop.MediaPlayer.GetMetadata
-
-							if($enableDBusHackery == true)
+							if($enableDBusHackery == true) // user enabled dbus hackery 
 							{
-								putenv("DISPLAY=:0");	
-
-								$dbus = new Dbus(Dbus::BUS_SESSION, true);
-								$clem = $dbus->createProxy(
-	            					'org.mpris.clementine',
-	            					'/Player',
-	            					'org.freedesktop.MediaPlayer'
-	          					); 
-
-								// do it
-								//
-								//$nextAction = $clem->Play();
-								//echo "<h3>Clementine status</h3>";
-								
-
-								echo "<b>Status: </b>";
-								$nextAction = $clem->GetStatus();
-
-								// we need to output it - otherwise its not accessible - but we hide it using ob_start/ob_end_clean
-								ob_start();
-								print "<pre>";
-								print_r($nextAction);
-								print "</pre>";
-								ob_end_clean();
-
-								//
-								// Is clementine playing, paused or stopped?
-								//
-								if($nextAction->struct[0] == "0")
+								if(isClemPlaying() == true) // clem is playing right now
 								{
-									echo "Playing ";
+									putenv("DISPLAY=:0");	
+
+									$dbus = new Dbus(Dbus::BUS_SESSION, true);
+									$clem = $dbus->createProxy(
+		            					'org.mpris.clementine',
+		            					'/Player',
+		            					'org.freedesktop.MediaPlayer'
+		          					); 
 
 									// what is it playing?
-									echo "<b>Track: </b>";
+									echo "<b>Clemetine is currently playing:</b><br>";
 									$nextAction2 = $clem->GetMetadata();
 
 									ob_start();
@@ -414,29 +423,15 @@
 									ob_end_clean();
 
 									print_r($nextAction2->dict['title']);
-									//print_r($nextAction2->dict['title']);
+									echo " <b>by</b><br>";
+									print_r($nextAction2->dict['artist']);
+									echo "<br>";
+									echo "<font color='gray'><small>autoreloading after $reloadInterval seconds</small></font>";
 								}
-								
-								if($nextAction->struct[0] == 1)
-								{
-									echo "Paused";
-								}
-
-								if($nextAction->struct[0] == 2)
-								{
-									echo "Stopped";
-								}
-
-
-								}
-
-
-							
-							
-							
+							}
 						}
 					} 
-					else 
+					else // db path is invalid
 					{
 						echo "<img src='img/database_bad.png' width='32' title='Database: $dbpath' align='right'>";
 						echo "&nbsp;<b>Database: </b> <font color='red'>invalid. Please check conf/settings.php</font>";
@@ -704,6 +699,7 @@
 			}
 
 			$result = $db->query($sql_statement);	// run sql query
+
 			echo '<table cellpadding="0" cellspacing="0" border="0" class="display" id="example">';
 			echo "<thead><tr>$tableColumns</tr></thead><tbody>";
 																							
@@ -920,9 +916,9 @@
 				ereg ("imgurl=http://www.[A-Za-z0-9-]*.[A-Za-z]*[^.]*.[A-Za-z]*", $code, $img);
 				ereg ("http://(.*)", $img[0], $img_pic);
 
-				if($img_pic[0] != '')  // show random cover
+				if($img_pic[0] != '')  // if we found an image - show it (random cover)
 				{
-					echo "<img src=".$img_pic[0]." width='300' border='1' title='Cover is fetched via internet.'>";
+					echo "<img src=".$img_pic[0]." width='300' border='1' title='cover art is fetched online.'>";
 				}
 			}
 
@@ -942,8 +938,8 @@
 		}
 		else // random artist is false
 		{
-			echo "<h3><center>blank page?</center></h3>";
-			echo "<center>Consider enabling the random album pick option in conf/settings.php<br>or<br>just select one of the pre-defined sql-queries in the head to have even more fun.<br><br><br><br><br><br><br><br><br><br><br></center>";
+			echo "<h3>Want more?</h3>";
+			echo "Consider enabling the random album pick option in conf/settings.php or just select one of the pre-defined sql-queries in the navigation to have even more fun.<br><br><br><br><br><br><br><br><br><br><br>";
 		}
 	}	
 ?>
