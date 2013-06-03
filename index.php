@@ -2,50 +2,6 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 	<meta charset="utf-8" />
-
-	<?php 
-		include "conf/settings.php";
-		include "inc/version.php";
-
-		echo "<title>".$appname." - ".$version." - ".$tagline."</title>";	// generate html header-title
-
-		if (!extension_loaded('dbus')) 
-		{
-  			//die('Extension dbus is not loaded');
-  			//echo "<font color='red'><b>Error:</b></font> dbus pecl extension is NOT loaded. You need that for the dbus-hackery.";
-		}
-		else // dbus pecl extension is loaded
-		{
-			if($enableDBusHackery == true) // user enabled dbus hackery in settings.conf
-			{
-				include "inc/dbus-functions.php";
-	
-				// Check if Clementine is currently playing - if so reload page after x seconds to update playing informations
-				if(isClemPlaying() == false)
-				{
-					// clementine is not playing - no need to reload the page
-				}
-				else
-				{
-					// only reload page if it isnt currently displaying the slow query 'All Tracks'
-					if(isset($_GET["q"]))
-					{	
-						$selected_stats = $_GET["q"];
-						if($selected_stats != "19")
-						{
-							reloadClemStats();
-						}
-					}
-					else // means no query was selected - aka: default page - aka: random pick
-					{
-						reloadClemStats();
-					}
-
-				}
-			}
-		}
-	?>
-
 	<meta name="keywords" content="clementine, stats, statistics, analyzer, database, music, library, lib" />
 	<meta name="description" content="clementine stats" />
 	<link rel='shortcut icon' type='image/x-icon' href='img/favicon.ico' />
@@ -62,150 +18,174 @@
 	<script type="text/javascript" language="javascript" src="js/DataTables-1.9.4/extras/TableTools/media/js/ZeroClipboard.js"></script>
 	<script type="text/javascript" language="javascript" src="js/DataTables-1.9.4/extras/TableTools/media/js/TableTools.min.js"></script>
 	<script src="js/Chart.js_Regaddi/Chart.min_20130509.js"></script>
+	
+	<?php 
+		include "conf/settings.php";
+		include "inc/version.php";
+		include "inc/dbus-checkStatus.php";
+		echo "<title>".$appname." - ".$version." - ".$tagline."</title>";	// generate html header-title
+
+		if (!extension_loaded('dbus')) 
+		{
+  			//echo "<font color='red'><b>Error:</b></font> dbus pecl extension is NOT loaded. You need that for the dbus-hackery.";
+		}
+		else // dbus pecl extension is loaded
+		{
+			if($enableDBusHackery == true) // user enabled dbus hackery in settings.conf
+			{
+				?>
+				<!-- reload nowPlaying informations periodicly -->
+				<script type="text/javascript">
+					var auto_refresh = setInterval(
+					function ()
+					{
+					$('#load').load('inc/dbus-nowPlaying.php').fadeIn("slow");
+					}, 1000); // refresh every 10000 milliseconds = 10 seconds
+				</script>
+
+				<?php
+			}
+		}
+	?>
+
 	<script>
+		// dbus - control function
+		function doPlay() 
+		{ 
+			$.post("inc/dbus-controlButtons.php", { task: "Play" } );
+		}
 
-	// dbus - control function
-	function doPlay() 
-	{ 
-		$.post("inc/dbus-control-buttons.php", { task: "Play" } );
-	}
+		function doPause() 
+		{ 
+			$.post("inc/dbus-controlButtons.php", { task: "Pause" } );
+		}
 
-	function doPause() 
-	{ 
-		$.post("inc/dbus-control-buttons.php", { task: "Pause" } );
-	}
+		function doStop() 
+		{ 
+			$.post("inc/dbus-controlButtons.php", { task: "Stop" } );
+		}  
 
-	function doStop() 
-	{ 
-		$.post("inc/dbus-control-buttons.php", { task: "Stop" } );
-	}  
+		function doNext() 
+		{ 
+			$.post("inc/dbus-controlButtons.php", { task: "Next" } );
+		}
 
-	function doNext() 
-	{ 
-		$.post("inc/dbus-control-buttons.php", { task: "Next" } );
-	}
+		function doPrev() 
+		{ 
+			$.post("inc/dbus-controlButtons.php", { task: "Prev" } );
+		} 
 
-	function doPrev() 
-	{ 
-		$.post("inc/dbus-control-buttons.php", { task: "Prev" } );
-	} 
+		function doOSD() 
+		{ 
+			$.post("inc/dbus-controlButtons.php", { task: "OSD" } );
+		}
 
-	function doOSD() 
-	{ 
-		$.post("inc/dbus-control-buttons.php", { task: "OSD" } );
-	}
+		function doMute() 
+		{ 
+			$.post("inc/dbus-controlButtons.php", { task: "Mute" } );
+		} 
 
-	function doMute() 
-	{ 
-		$.post("inc/dbus-control-buttons.php", { task: "Mute" } );
-	} 
+		function doVolUp() 
+		{ 
+			$.post("inc/dbus-controlButtons.php", { task: "VolUp" } );
+		}
 
-	function doVolUp() 
-	{ 
-		$.post("inc/dbus-control-buttons.php", { task: "VolUp" } );
-	}
+		function doVolDown() 
+		{ 
+			$.post("inc/dbus-controlButtons.php", { task: "VolDown" } );
+		}
 
-	function doVolDown() 
-	{ 
-		$.post("inc/dbus-control-buttons.php", { task: "VolDown" } );
-	}
-
-	function doVol100() 
-	{ 
-		$.post("inc/dbus-control-buttons.php", { task: "Vol100" } );
-	}  
+		function doVol100() 
+		{ 
+			$.post("inc/dbus-controlButtons.php", { task: "Vol100" } );
+		}  
 
 
-	// other non-dbus related functions
-	function doPost() 
-	{ 
-		form1.s.click();
-	} 
+		// other non-dbus related functions
+		function doPost() 
+		{ 
+			form1.s.click();
+		} 
 
-	function doHide()
-	{
-        document.getElementById('graph1').style.display = "none";
-	}
+		function doHide()
+		{
+	        document.getElementById('graph1').style.display = "none";
+		}
 
-	function doHideRandom()
-	{
-        document.getElementById('randomPick').style.display = "none";
-	}
+		function doHideRandom()
+		{
+	        document.getElementById('randomPick').style.display = "none";
+		}
 
-	function dbOptions()
-	{
-		alert("Everything is fine.");
-	}
+		function dbOptions()
+		{
+			alert("Everything is fine.");
+		}
 	</script>
 
 	<script type="text/javascript" charset="utf-8">
 		var asInitVals = new Array();
 
 		$(document).ready(function() {
-			var oTable = $('#example').dataTable( {
-				"sDom": 'T<"clear">lfrtip',
-				"oTableTools": {
-					//"aButtons": [{"sExtends":    "collection","sButtonText": "Save", "aButtons":    [ "csv", "xls", "pdf" ]}],
-					"sSwfPath": "js/DataTables-1.9.4/extras/TableTools/media/swf/copy_csv_xls_pdf.swf",
-					"aButtons": [
-		                  "csv",
-		                  {
-		                     "sExtends": "print",
-		                     "sButtonText": "Printview"
-		                  },
-		                  {
-		                     "sExtends": "pdf",
-		                     "sTitle": "clemStats - Portrait", // ansonsten steht hier: KIS Kniel Inventar System - aka doc-title
-		                     "sFileName": "<?php print('clemStats_export_portrait'); ?>.pdf",
-		                     "sPdfOrientation": "portrait",
-		                     "sPdfMessage": "PDF (portrait)",
-		                     "sButtonText": "PDF (portrait)"
-		                  },
-		                  {
-		                     "sExtends": "pdf",
-		                     "sTitle": "clemStats - Landscape", // ansonsten steht hier: KIS Kniel Inventar System - aka doc-title
-		                     "sFileName": "<?php print('clemStats_export_landscape'); ?>.pdf",
-		                     "sPdfOrientation": "landscape",
-		                     "sPdfMessage": "PDF (landscape)",
-		                     "sButtonText": "PDF (landscape)"
-		                  }
-		               ]
-				},
-				"bSortClasses": false, // should speed it up a little - TESTING
-				"aLengthMenu": [[10, 25, 50, 100, 500, -1], [10, 25, 50, 100, 500, "All"]],
-			    "iDisplayLength": 10,
-				"oLanguage": {
-					"sSearch": "Search all columns:"
-				}
-			} );
-			
-			$("tfoot input").keyup( function () {
-				/* Filter on the column (the index) of this element */
-				oTable.fnFilter( this.value, $("tfoot input").index(this) );
-			} );
-			
-			// Support functions to provide a little bit of 'user friendlyness' to the textboxes in the footer
-			$("tfoot input").each( function (i) {
-				asInitVals[i] = this.value;
-			} );
-			
-			$("tfoot input").focus( function () {
-				if ( this.className == "search_init" )
-				{
-					this.className = "";
-					this.value = "";
-				}
-			} );
-			
-			$("tfoot input").blur( function (i) {
-				if ( this.value == "" )
-				{
-					this.className = "search_init";
-					this.value = asInitVals[$("tfoot input").index(this)];
-				}
-			} );
+		var oTable = $('#example').dataTable( {
+		"sDom": 'T<"clear">lfrtip',
+		"oTableTools": {
+		"sSwfPath": "js/DataTables-1.9.4/extras/TableTools/media/swf/copy_csv_xls_pdf.swf",
+		"aButtons": [
+		"csv",
+		{
+		"sExtends": "print",
+		"sButtonText": "Printview"
+		},
+		{
+		"sExtends": "pdf",
+		"sTitle": "clemStats - Portrait", // aka doc-title
+		"sFileName": "<?php print('clemStats_export_portrait'); ?>.pdf",
+		"sPdfOrientation": "portrait",
+		"sPdfMessage": "PDF (portrait)",
+		"sButtonText": "PDF (portrait)"
+		},
+		{
+		"sExtends": "pdf",
+		"sTitle": "clemStats - Landscape", // aka doc-title
+		"sFileName": "<?php print('clemStats_export_landscape'); ?>.pdf",
+		"sPdfOrientation": "landscape",
+		"sPdfMessage": "PDF (landscape)",
+		"sButtonText": "PDF (landscape)"
+		}
+		]
+		},
+		"bSortClasses": false, // should speed it up a little - TESTING
+		"aLengthMenu": [[10, 25, 50, 100, 500, -1], [10, 25, 50, 100, 500, "All"]],
+		"iDisplayLength": 10,
+		"oLanguage": {
+		"sSearch": "Search all columns:"
+		}
 		} );
-	</script>
+		$("tfoot input").keyup( function () {
+		/* Filter on the column (the index) of this element */
+		oTable.fnFilter( this.value, $("tfoot input").index(this) );
+		} );
+		// Support functions to provide a little bit of 'user friendlyness' to the textboxes in the footer
+		$("tfoot input").each( function (i) {
+		asInitVals[i] = this.value;
+		} );
+		$("tfoot input").focus( function () {
+		if ( this.className == "search_init" )
+		{
+		this.className = "";
+		this.value = "";
+		}
+		} );
+		$("tfoot input").blur( function (i) {
+		if ( this.value == "" )
+		{
+		this.className = "search_init";
+		this.value = asInitVals[$("tfoot input").index(this)];
+		}
+		} );
+		} );
+		</script>
 </head>
 
 
@@ -221,7 +201,6 @@
 
 			<?php
 				echo '<div id="header_info">';
-
 					// if clementine datbase configured in settings.php is valid
 					if (file_exists($dbpath)) 
 					{
@@ -234,10 +213,8 @@
 								$this->open($dbpath);
 							}	
 						}
-
 						$db2 = new MyDB2();
 
-					 
 						// Show: TRACKS
 						$result5 = $db2->query('SELECT COUNT(*) FROM songs WHERE unavailable !="1"');
 						while ($row5 = $result5->fetchArray()) 
@@ -281,15 +258,15 @@
 							$tracks_playtime = $row7[0] / 60 / 60 /24 /1000000000;
 							$tracks_playtime = round($tracks_playtime, 2);
 						} 
-
 						$now = date("Ymd G:i");				// generate a timestamp			
 					}
 			?>
 
 			<!-- MAIN NAVIGATION TABLE INCLUDING THE VERSION AND THE QUERY-DROPDOWNS -->
 			<table border="0">
+				
 				<tr>
-					<td colspan="4"><b>version: </b><?php echo $version; ?>&nbsp;|&nbsp;<a href="https://github.com/macfidelity/clemStats/wiki">Wiki</a>&nbsp;|&nbsp;<a href="https://github.com/macfidelity/clemStats/issues">Issues</a>&nbsp;|&nbsp;Page generated at: <?php echo $now; ?></td>
+					<td colspan="3"><b>version: </b><?php echo $version; ?>&nbsp;|&nbsp;<a href="https://github.com/macfidelity/clemStats/wiki">Wiki</a>&nbsp;|&nbsp;<a href="https://github.com/macfidelity/clemStats/issues">Issues</a>&nbsp;|&nbsp; Time: <?php echo $now; ?></td>
 				</tr>
 				<tr>
 					<td>
@@ -373,12 +350,28 @@
 						}
 					}
 				?>
-
 			</table>
 		</div>
-		
 		</header>
 		<!-- #header-->
+
+
+		<!-- dbus control line -->
+		<div id="dbusLine">	
+			<?php
+				if (!extension_loaded('dbus')) 
+				{
+  					echo "<font color='red'><b>Error:</b></font> dbus pecl extension is NOT loaded. You need that for the dbus-hackery.";
+				}
+				else
+				{
+					if($enableDBusHackery == true)
+					{
+						echo '<div id="dbusPlay"><div id="load"><img src="img/loading.gif" width="12"><small>... gathering informations&nbsp;</small></div></div>';
+					}
+				}
+			?>
+		</div>
 
 
 		<!-- #content-->
@@ -389,60 +382,18 @@
 				<meta HTTP-EQUIV="REFRESH" content="0; url=nojs.php">  <!--  redirect to error page -->
 			</noscript> 
 				
-
-				<?php 
-					//
-					// Check if db file is valid
-					//	
-					if (file_exists($dbpath)) 
-					{
-						echo "<a href='javascript:void(0);'' onclick='dbOptions()'><img src='img/database_good.png' width='32' alt='db_icon' title='Database: $dbpath' align='right'></a>";
-
-						if (!extension_loaded('dbus')) 
-						{
-  							//die('Extension dbus is not loaded');
-  							//echo "<b>Error:</b> dbus pecl extension is NOT loaded.";
-						}
-						else // extension is loaded
-						{
-							if($enableDBusHackery == true) // user enabled dbus hackery 
-							{
-								if(isClemPlaying() == true) // clem is playing right now
-								{
-									putenv("DISPLAY=:0");	
-
-									$dbus = new Dbus(Dbus::BUS_SESSION, true);
-									$clem = $dbus->createProxy(
-		            					'org.mpris.clementine',
-		            					'/Player',
-		            					'org.freedesktop.MediaPlayer'
-		          					); 
-
-									// what is it playing?
-									echo "<b>Clemetine is currently playing:</b><br>";
-									$nextAction2 = $clem->GetMetadata();
-
-									ob_start();
-									print "<pre>";
-									print_r($nextAction2);
-									print "</pre>";
-									ob_end_clean();
-
-									print_r($nextAction2->dict['title']);
-									echo " <b>by</b><br>";
-									print_r($nextAction2->dict['artist']);
-									echo "<br>";
-									echo "<font color='gray'><small>autoreloading after $reloadInterval seconds</small></font>";
-								}
-							}
-						}
-					} 
-					else // db path is invalid
-					{
-						echo "<img src='img/database_bad.png' width='32' title='Database: $dbpath' align='right'>";
-						echo "&nbsp;<b>Database: </b> <font color='red'>invalid. Please check conf/settings.php</font>";
-					}
-				?>
+			<?php 
+				// Check if db file is valid	
+				if (file_exists($dbpath)) 
+				{
+					echo "<a href='javascript:void(0);'' onclick='dbOptions()'><img src='img/database_good.png' width='32' alt='db_icon' title='Database: $dbpath' align='right'></a>";
+				} 
+				else // db path is invalid
+				{
+					echo "<img src='img/database_bad.png' width='32' title='Database: $dbpath' align='right'>";
+					echo "&nbsp;<b>Database: </b> <font color='red'>invalid. Please check conf/settings.php</font>";
+				}
+			?>
 	</form>
 </body>
 </html>
@@ -450,7 +401,7 @@
 
 <?php
 	//
-	// GET: do we get something or not?
+	// SHOWING QUERY RESULT
 	//
 	if(isset($_GET["q"]))
 	{
@@ -511,9 +462,9 @@
 															
 			case "15":
 				$graph_title = "Best scored track";
-				$sql_statement = "SELECT title, score, artist, album FROM songs WHERE score > 0 and unavailable != '1' ORDER BY score DESC";
-				$cols = 5;
-				$tableColumns = "<th>No.</th><th>Track</th><th>Score</th><th>Artist</th><th>Album</th>";
+				$sql_statement = "SELECT title, score, artist, album, playcount FROM songs WHERE score > 0 and unavailable != '1' ORDER BY score DESC";
+				$cols = 6;
+				$tableColumns = "<th>No.</th><th>Track</th><th>Score</th><th>Artist</th><th>Album</th><th>Playcount</th>";
 				$graph = false;
 			break;
 
@@ -697,13 +648,11 @@
 
 			if($graph == true)
 			{
-				// chart.js - generate a Graph placeholder if needed
-				echo '<div id="graph1">';
+				echo '<div id="graph1">'; // chart.js - generate a Graph placeholder if needed
 				echo '<input type="button" Name="hideButton" value="Hide Graph" onclick="doHide();"><br>';
 				echo '<canvas id="myChart" width="400" height="200"></canvas>';
 				echo '</div>';
 			}
-
 			$result = $db->query($sql_statement);	// run sql query
 
 			echo '<table cellpadding="0" cellspacing="0" border="0" class="display" id="example">';
@@ -716,17 +665,13 @@
 					$randomColor = sprintf("#%x%x%x", rand(200,240), rand(50,200), rand(20,70)); // random color creation for each graph element
 			?>
 					<script>
-						// prepare chart-js graph
-						//
-						// Get the context of the canvas element we want to select
+						// prepare chart-js graph - Get the context of the canvas element we want to select
 						var ctx = document.getElementById("myChart").getContext("2d");
-						//var randomColor = '#'+(0x1000000+(Math.random())*0xff0000).toString(16).substr(1,6);
 						
 						// push data to js- graph data
 						data.push({
 		        			value: <?php echo $row[1]; ?>,
 		        			label: "<?php echo $row[0]; ?>",
-		        			//color: '#'+(0x1000000+(Math.random())*0xffffff).toString(16).substr(1,6),
 		        			color: "<?php echo $randomColor; ?>",
 		        			labelColor : 'black',
 		                	labelFontSize : '16'
@@ -767,12 +712,9 @@
 						echo "</tr>";
 					break;
 
-					case "y":	
-						// lastplayed: converting epoche time to human-readable timestamp
-						$epochetimestamp = $row[3];
-						$epochetimestamp = $epochetimestamp +7200; // +2 hours time-correction
+					case "y": // lastplayed: converting epoche time to human-readable timestamp	
+						$epochetimestamp = $row[3] +7200;
 						$humanTimestamp = gmdate('Ymd H:i:s', $epochetimestamp);
-
 						echo "<tr class='odd gradeU'>";
 							echo "<td>".$hits."</td>";
 							echo "<td>".$row[0]."</td>";
@@ -806,8 +748,7 @@
 			}
 
 			// table footer
-			echo '<tfoot>';
-			echo '<tr>';
+			echo '<tfoot><tr>';
 			switch ($cols)
 			{
 					case "3":	
@@ -848,9 +789,7 @@
 						echo '<th><input type="text" name="search" value="Search" class="search_init" /></th>';
 					break;
 			}
-			echo '</tr>';
-			echo '</tfoot>';
-			echo '<table>';
+			echo '</tr></tfoot><table>';
 
 			echo '<br><br><b>Query:</b><font color="gray"> '.$sql_statement.'.</font><br><br>';
 
@@ -870,6 +809,9 @@
 			}
 		}
 	}
+	//
+	// SHOWING EITHER RANDOM ALBUM OR BLANK PAGE NOTIFICATION
+	//
 	else // showing random page
 	{
 		if($enableRandomAlbum == true) // random albumpick enabled?
@@ -939,13 +881,12 @@
 				echo "&nbsp;<a href='http://www.last.fm/search?q=".$random_artist."' target='_new'>last.fm</a>";						// last.fm
 				echo "&nbsp;<a href='http://www.whosampled.com/search/artists/?q=".$random_artist."' target='_new'>WhoSampled</a>";						// whosampled
 			}
-
 			echo "</div>";
 		}
 		else // random artist is false
 		{
 			echo "<h3>Want more?</h3>";
-			echo "Consider enabling the random album pick option in conf/settings.php or just select one of the pre-defined sql-queries in the navigation to have even more fun.<br><br><br><br><br><br><br><br><br><br><br>";
+			echo "Consider enabling the random album pick option in <i>conf/settings.php</i> or just select one of the pre-defined sql-queries in the navigation to have even more fun.<br><br><br><br><br><br><br><br><br><br><br>";
 		}
 	}	
 ?>

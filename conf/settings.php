@@ -30,5 +30,4 @@
 	// - dbus control buttons for clementine (play, pause, stop, next, prev etc)
 	// - clemStats displaying the clementine status (playing, paused, stopped)
 	$enableDBusHackery = true; // true or false
-	$reloadInterval = 20;	// value in seconds - defines when the page is reloaded to update the playing informations. 0 = reload disabled
 ?>

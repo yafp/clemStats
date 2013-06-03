@@ -6,7 +6,6 @@
 	//
 
 	// Reminder: Available Methods
-	//
 	GetCaps
 	GetMetadata()
 	GetStatus()
@@ -26,15 +25,13 @@
 	VolumeUp()
 	*/
 
-	include "../inc/dbus-functions.php";
+	include "../inc/dbus-checkStatus.php";
 
+	$task = $_POST['task'];	// get post data
 
-	$task = $_POST['task'];
-
+	// prepare dbus
 	putenv("DISPLAY=:0");
-
-	$dbus = new Dbus(Dbus::BUS_SESSION, true);
-							
+	$dbus = new Dbus(Dbus::BUS_SESSION, true);						
 	$clem = $dbus->createProxy
 	(
         'org.mpris.clementine',
@@ -42,12 +39,11 @@
         'org.freedesktop.MediaPlayer'
     ); 
 
-	// do it
-	//
+	// query dbus 
 	switch ($task) 
 	{
 		case "Play":
-		    $nextAction = $clem->Play();
+			$nextAction = $clem->Play();
 		    break;
 
 		case "Pause":
@@ -98,5 +94,4 @@
 			}
 		    break;
 	}
-
 ?> 

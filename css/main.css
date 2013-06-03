@@ -11,7 +11,6 @@ body {
 	background-position:right bottom;
 }
 
-
 #wrapper {
 	width: 100%;
 	min-width: 600px;
@@ -21,7 +20,7 @@ body {
 }
 
 
-/* Header
+/* HEADER
 -----------------------------------------------------------------------------*/
 #header {
 	height: 100px;
@@ -31,7 +30,7 @@ body {
 
 	border-style:none;
 	border-bottom:solid orange;
-	border-bottom-width:5px; 
+	border-bottom-width:3px; 
 }
 
 #header h1 {
@@ -45,14 +44,12 @@ body {
 	text-decoration:none
 }
 
-
 #header h2 {
 	color: white;
 	padding-top: 5px;
 	font-size: 12px;
 	padding-bottom:10px;
 }
-
 
 #header_info {
 	float:right; 
@@ -66,7 +63,27 @@ body {
 }
 
 
-/* Middle
+
+
+/* DBUS
+-----------------------------------------------------------------------------*/
+#dbusLine {
+	color: white;
+	background-color: DarkGray;
+	padding-left: 10px;
+}
+
+#dbusPlay {
+	background-color: orange;
+	float: left;
+	border-bottom-left-radius: 5px;
+	border-bottom-right-radius: 5px;
+}
+
+
+
+
+/* CONTENT
 -----------------------------------------------------------------------------*/
 #content {
 	padding: 0 0 50px;
@@ -87,5 +104,3 @@ body {
 	background: #696969;
 	border-radius: 5px;
 }
-
-

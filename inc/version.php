@@ -4,5 +4,5 @@
 	// ########################################################################################
 	$appname	= "clemStats";
 	$tagline	= "a clementine database analyzer";
-	$version 	= "20130601.03";
+	$version 	= "20130603.01";
 ?>
