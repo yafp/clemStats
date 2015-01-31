@@ -5,13 +5,11 @@
 	<meta name="keywords" content="clementine, stats, statistics, analyzer, database, music, library, lib" />
 	<meta name="description" content="clementine stats" />
 	<link rel='shortcut icon' type='image/x-icon' href='img/favicon.ico' />
-
 	<!-- CSS STUFF -->
 	<link rel="stylesheet" href="css/main.css" type="text/css" media="screen, projection" />
 	<!--[if lte IE 6]><link rel="stylesheet" href="css/style_ie.css" type="text/css" media="screen, projection" /><![endif]-->
 	<style type="text/css" title="currentStyle">@import "css/table.css";</style>
 	<link rel="stylesheet" href="js/DataTables-1.9.4/extras/TableTools/media/css/TableTools.css" type="text/css" media="screen, projection" />
-
 	<!-- jquery, chart,js & datatable stuff -->
 	<script type="text/javascript" language="javascript" src="js/jquery/jquery-1.9.1-min.js"></script>
 	<script type="text/javascript" language="javascript" src="js/DataTables-1.9.4/media/js/jquery.dataTables.min.js"></script>
