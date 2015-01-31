@@ -106,7 +106,7 @@ body {
 #content h4 {
 	color: #696969;
 	line-height: 100%;
-	font-size: 70px;
+	font-size: 50px;
 	padding-top: 50px;
 	padding-bottom: 40px;
 }
@@ -114,7 +114,7 @@ body {
 
 #content h4 span {
 	color: orange;
-	font-size: 70px;
+	font-size: 50px;
 	padding-top: 50px;
 	padding-bottom: 40px;
 }

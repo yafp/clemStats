@@ -887,7 +887,7 @@
 		{
 			echo "<h4>Your library comes with a total of <span>".$tracks_all." tracks</span>, coming from <span>".$overall_artists." artists</span> with overall <span>".$overall_albums." albums</span> featuring <span>".$overall_genres." genres</span>.</h4>";
 			
-			echo "<h4>Altogether an approx playtime of <span>".$tracks_playtime." days</span>.</h4>";
+			echo "<h4>This sums up to an approx playtime of <span>".$tracks_playtime." days</span>.</h4>";
 
 			echo "<h4>So far you listened to <span>".$tracks_played." </span> of those <span>".$tracks_all." tracks</span>.</h4>";
 					
