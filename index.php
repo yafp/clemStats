@@ -157,7 +157,7 @@
 		},
 		"bSortClasses": false, // should speed it up a little - TESTING
 		"aLengthMenu": [[10, 25, 50, 100, 500, -1], [10, 25, 50, 100, 500, "All"]],
-		"iDisplayLength": 10,
+		"iDisplayLength": 50,
 		"oLanguage": {
 		"sSearch": "Search all columns:"
 		}
@@ -323,7 +323,7 @@
 
 					if (!extension_loaded('dbus')) 
 					{
-  						echo "<font color='red'><b>Error:</b></font> dbus pecl extension is NOT loaded. You need that for the dbus-hackery.";
+  						//echo "<font color='red'><b>Error:</b></font> dbus pecl extension is NOT loaded. You need that for the dbus-hackery.";
 					}
 					else
 					{
@@ -361,7 +361,7 @@
 			<?php
 				if (!extension_loaded('dbus')) 
 				{
-  					echo "<font color='red'><b>Error:</b></font> dbus pecl extension is NOT loaded. You need that for the dbus-hackery.";
+  					//echo "<font color='red'><b>Error:</b></font> dbus pecl extension is NOT loaded. You need that for the dbus-hackery.";
 				}
 				else
 				{
@@ -885,8 +885,19 @@
 		}
 		else // random artist is false
 		{
+			echo "<h4>Your library comes with a total of <span>".$tracks_all." tracks</span>, coming from <span>".$overall_artists." artists</span> with overall <span>".$overall_albums." albums</span> featuring <span>".$overall_genres." genres</span>.</h4>";
+			
+			echo "<h4>Altogether an approx playtime of <span>".$tracks_playtime." days</span>.</h4>";
+
+			echo "<h4>So far you listened to <span>".$tracks_played." </span> of those <span>".$tracks_all." tracks</span>.</h4>";
+					
+			echo "<h4>Insane isn't it</h4>";
+			
+			
 			echo "<h3>Want more?</h3>";
-			echo "Consider enabling the random album pick option in <i>conf/settings.php</i> or just select one of the pre-defined sql-queries in the navigation to have even more fun.<br><br><br><br><br><br><br><br><br><br><br>";
+			echo "Consider enabling the random album pick option in <i>conf/settings.php</i> or just select one of the pre-defined sql-queries in the navigation to have even more fun.";
+
+			//
 		}
 	}	
 ?>

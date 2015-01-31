@@ -10,7 +10,7 @@
 	// RANDOM PICK 
 	// ########################################################################################
 	// Random album & cover on main page when no search occured
-	$enableRandomAlbum = true;			// random local album - true or false
+	$enableRandomAlbum = false;			// random local album - true or false
 	// next values depend on $enableRandomAlbum = true
 	$enableRandomCover = true;			// cover via google search - needs internet access. true or false
 	$enableLinksForRandomArtist = true;	// displays some www-links for additional informations about the random artist. true or false
@@ -29,5 +29,5 @@
 	// and results in
 	// - dbus control buttons for clementine (play, pause, stop, next, prev etc)
 	// - clemStats displaying the clementine status (playing, paused, stopped)
-	$enableDBusHackery = true; // true or false
+	$enableDBusHackery = false; // true or false
 ?>
