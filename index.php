@@ -264,7 +264,7 @@
 			<table border="0">
 				
 				<tr>
-					<td colspan="3"><b>version: </b><?php echo $version; ?>&nbsp;|&nbsp;<a href="https://github.com/macfidelity/clemStats/wiki">Wiki</a>&nbsp;|&nbsp;<a href="https://github.com/macfidelity/clemStats/issues">Issues</a>&nbsp;|&nbsp; Time: <?php echo $now; ?></td>
+					<td colspan="3"><b>version: </b><?php echo $version; ?>&nbsp;|&nbsp;<a href="https://github.com/yafp/clemStats/wiki">Wiki</a>&nbsp;|&nbsp;<a href="https://github.com/yafp/clemStats/issues">Issues</a>&nbsp;|&nbsp; Time: <?php echo $now; ?></td>
 				</tr>
 				<tr>
 					<td>
