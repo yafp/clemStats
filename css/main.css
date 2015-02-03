@@ -5,81 +5,6 @@
 
 body {
 	font: 12px/18px Arial, Helvetica, sans-serif;
-
-	/*
-	background-image:url('../img/clem_bg.jpg');
-	background-repeat:no-repeat;
-	background-position:right bottom;
-	*/
-}
-
-#wrapper {
-	width: 100%;
-	min-width: 600px;
-	min-height: 100%;
-	height: auto !important;
-	height: 100%;
-}
-
-
-/* HEADER
------------------------------------------------------------------------------*/
-#header {
-	height: 100px;
-	background: gray;
-	background: #696969;
-	padding-left: 10px;
-
-	border-style:none;
-	border-bottom:solid orange;
-	border-bottom-width:3px; 
-}
-
-#header h1 {
-	color: orange;
-	font-size: 30px;
-	padding-top: 10px;
-}
-
-#header h1 a {
-	color: orange;
-	text-decoration:none
-}
-
-#header h2 {
-	color: white;
-	padding-top: 5px;
-	font-size: 12px;
-	padding-bottom:10px;
-}
-
-#header_info {
-	float:right; 
-	color: white;
-	margin-top: -60px;
-	margin-right: 10px;
-}
-
-#header_info a {
-	color: orange;
-}
-
-
-
-
-/* DBUS
------------------------------------------------------------------------------*/
-#dbusLine {
-	color: white;
-	background-color: DarkGray;
-	padding-left: 10px;
-}
-
-#dbusPlay {
-	background-color: orange;
-	float: left;
-	border-bottom-left-radius: 5px;
-	border-bottom-right-radius: 5px;
 }
 
 
@@ -87,41 +12,48 @@ body {
 
 /* CONTENT
 -----------------------------------------------------------------------------*/
-#content {
-	padding: 0 0 50px;
-	padding-left: 10px;
-	padding-right: 10px;
-}
-
-#content h3 {
+#collapse1 h3 {
 	color: orange;
 	font-size: 20px;
 	padding-top: 30px;
 	padding-bottom: 10px;
 }
 
-
-
-
-#content h4 {
+#collapse1 h4 {
 	color: #696969;
 	line-height: 100%;
-	font-size: 50px;
-	padding-top: 50px;
-	padding-bottom: 40px;
+	font-size: 30px;
+	padding-top: 10px;
+	padding-bottom: 10px;
 }
 
-
-#content h4 span {
+#collapse1 h4 span {
 	color: orange;
-	font-size: 50px;
-	padding-top: 50px;
+	font-size: 30px;
+	padding-top: 30px;
 	padding-bottom: 40px;
 }
 
 
 
 
+/* RANDOM PICK
+-----------------------------------------------------------------------------*/
+#randomPick h4 {
+	color: #696969;
+	line-height: 100%;
+	font-size: 30px;
+	padding-top: 10px;
+	padding-bottom: 10px;
+}
+
+
+#randomPic h4 span {
+	color: orange;
+	font-size: 30px;
+	padding-top: 30px;
+	padding-bottom: 40px;
+}
 
 
 #randomPick a{
@@ -129,4 +61,23 @@ body {
 	padding: 5px;
 	background: #696969;
 	border-radius: 5px;
+}
+
+
+
+
+#randomPick h4 span {
+	color: orange;
+	font-size: 30px;
+	padding-top: 30px;
+	padding-bottom: 40px;
+}
+
+
+
+
+#queryContent {
+	background-color: white;
+	padding-left: 12%;
+	padding-right: 12%;
 }
