@@ -2,7 +2,7 @@
 	// ########################################################################################
 	// GENERAL
 	// ########################################################################################
-	$appname	= "clemStats";
-	$tagline	= "a clementine database analyzer";
-	$version 	= "20150203.01";
+	$appname		= "clemStats";
+	$tagline		= "a clementine database analyzer";
+	$version 	= "20151026.01";
 ?>
