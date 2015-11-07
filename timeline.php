@@ -5,19 +5,15 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta name="description" content="">
-	<meta name="author" content="">
+	<meta name="description" content="a clementine database analyzer">
+	<meta name="author" content="yafp">
 
 	<link rel="icon" href="img/favicon.ico">
-	<!-- Bootstrap core CSS -->
 	<link href="css/bootstrap.min.css" rel="stylesheet">
-	<!-- Bootstrap theme -->
 	<link href="css/bootstrap-theme.min.css" rel="stylesheet">
-
-	<!-- Main CSS -->
 	<link href="css/main.css" rel="stylesheet">
 
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+
 
 	<!-- Idee -->
 	<!--
@@ -36,71 +32,10 @@
 	https://music-timeline.appspot.com/about.html
 	-->
 
-
-
 	<?php
 		include "conf/settings.php";
 		include "inc/version.php";
 		echo "<title>".$appname." - ".$version." - ".$tagline."</title>";	// generate html header-title
-
-		if (file_exists($dbpath))
-					{
-						// sqlite stuff - access clementine db file
-						class MyDB2 extends SQLite3
-						{
-							function __construct()
-							{
-								include "conf/settings.php";
-								$this->open($dbpath);
-							}
-						}
-						$db2 = new MyDB2();
-
-						// Show: TRACKS
-						$result5 = $db2->query('SELECT COUNT(*) FROM songs WHERE unavailable !="1"');
-						while ($row5 = $result5->fetchArray())
-						{
-							$tracks_all = $row5[0];
-						}
-
-						// Show: PLAYED
-						$result6 = $db2->query('SELECT COUNT(*) FROM songs WHERE lastplayed <> "-1" and unavailable !="1"');
-						while ($row6 = $result6->fetchArray())
-						{
-							$tracks_played = $row6[0];
-							$tracks_played_ratio =  ($tracks_played/$tracks_all)*100;
-						}
-
-						// Show: ARTISTS
-						$result4 = $db2->query('SELECT COUNT(DISTINCT artist) FROM songs WHERE unavailable !="1"');
-						while ($row4 = $result4->fetchArray())
-						{
-							$overall_artists = $row4[0];
-						}
-
-						// Show: ALBUMS
-						$result3 = $db2->query('SELECT COUNT(DISTINCT album) FROM songs WHERE unavailable !="1"');
-						while ($row3 = $result3->fetchArray())
-						{
-							$overall_albums = $row3[0];
-						}
-
-						// Show: GENRES
-						$result2 = $db2->query('SELECT COUNT(DISTINCT genre) FROM songs WHERE unavailable !="1"');
-						while ($row2 = $result2->fetchArray())
-						{
-							$overall_genres = $row2[0];
-						}
-
-						// Show: PLAYTIME
-						$result7 = $db2->query('SELECT SUM(length) FROM songs WHERE unavailable !="1"');
-						while ($row7 = $result7->fetchArray())
-						{
-							$tracks_playtime = $row7[0] / 60 / 60 /24 /1000000000;
-							$tracks_playtime = round($tracks_playtime, 2);
-						}
-						$now = date("Ymd G:i");				// generate a timestamp
-					}
 	?>
 </head>
 
@@ -121,18 +56,10 @@
 			</div>
 			<div id="navbar" class="navbar-collapse collapse">
 				<ul class="nav navbar-nav">
-					<li>
-						<a href="index.php">
-							<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span> Home</a>
-					</li>
-					<li>
-						<a href="queries.php">
-							<span class="glyphicon glyphicon-stats" aria-hidden="true"></span> Queries</a>
-					</li>
-					<li class="active">
-						<a href="timeline.php">
-							<span class="glyphicon glyphicon-filter" aria-hidden="true"></span> Timeline</a>
-					</li>
+					<li><a href="index.php"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span> Home</a></li>
+					<li><a href="queries.php"><span class="glyphicon glyphicon-stats" aria-hidden="true"></span> Queries</a></li>
+					<li class="active"><a href="timeline.php"><span class="glyphicon glyphicon-filter" aria-hidden="true"></span> Timeline</a></li>
+					<li><a href="tagcloud.php"><span class="glyphicon glyphicon-tags" aria-hidden="true"></span> Tagcloud</a></li>
 					<li class="dropdown">
 						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
 							<span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span> Help
@@ -157,7 +84,7 @@
 		<br>
 		<br>
 		<br>
-		<form name="form1" Method="GET" Action="queries.php">
+		<form name="form1" Method="GET" Action="timeline.php">
 
 			<div class="panel-group" id="accordion">
 				<div class="panel panel-default">
@@ -219,12 +146,8 @@
 	</div>
 	<!-- /container -->
 
-
-
-
-	<!-- Bootstrap core JavaScript
-		================================================== -->
-	<!-- Placed at the end of the document so the pages load faster -->
-	<script src="js/bootstrap.min.js"></script>
+	<!-- JavaScript -- Placed at the end of the document so the pages load faster -->
+	<script type="text/javascript" language="javascript" src="js/jquery-2.1.4.min.js"></script>
+	<script type="text/javascript" language="javascript" src="js/bootstrap.min.js"></script>
 </body>
 </html>

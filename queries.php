@@ -5,57 +5,26 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta name="description" content="">
-	<meta name="author" content="">
+	<meta name="description" content="a clementine database analyzer">
+	<meta name="author" content="yafp">
 
 	<link rel="icon" href="img/favicon.ico">
-	<!-- Bootstrap core CSS -->
 	<link href="css/bootstrap.min.css" rel="stylesheet">
-	<!-- Bootstrap theme -->
 	<link href="css/bootstrap-theme.min.css" rel="stylesheet">
-	<!-- DataTable -->
 	<style type="text/css" title="currentStyle">
 		@import "css/table.css";
 	</style>
-	<link rel="stylesheet" href="js/DataTables-1.9.4/extras/TableTools/media/css/TableTools.css" type="text/css" media="screen, projection" />
-	<!-- Main CSS -->
 	<link href="css/main.css" rel="stylesheet">
 
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-	<script type="text/javascript" language="javascript" src="js/DataTables-1.9.4/media/js/jquery.dataTables.min.js"></script>
-	<script type="text/javascript" language="javascript" src="js/DataTables-1.9.4/extras/TableTools/media/js/ZeroClipboard.js"></script>
-	<script type="text/javascript" language="javascript" src="js/DataTables-1.9.4/extras/TableTools/media/js/TableTools.min.js"></script>
-	<script src="js/Chart.js_Regaddi/Chart.min_20130509.js"></script>
-
+	<script type="text/javascript" language="javascript" src="js/jquery-2.1.4.min.js"></script>
+	<script type="text/javascript" language="javascript" src="js/DataTables-1.10.9/media/js/jquery.dataTables.min.js"></script>
+	<script type="text/javascript" language="javascript" src="js/Chart.js_Regaddi/Chart.min_20130509.js"></script>
 	<script type="text/javascript" charset="utf-8">
 		var asInitVals = new Array();
 
 		$(document).ready(function() {
 			var oTable = $('#example').dataTable({
 				"sDom": 'T<"clear">lfrtip',
-				"oTableTools": {
-					"sSwfPath": "js/DataTables-1.9.4/extras/TableTools/media/swf/copy_csv_xls_pdf.swf",
-					"aButtons": [
-						"csv", {
-							"sExtends": "print",
-							"sButtonText": "Printview"
-						}, {
-							"sExtends": "pdf",
-							"sTitle": "clemStats - Portrait", // aka doc-title
-							"sFileName": "<?php print('clemStats_export_portrait'); ?>.pdf",
-							"sPdfOrientation": "portrait",
-							"sPdfMessage": "PDF (portrait)",
-							"sButtonText": "PDF (portrait)"
-						}, {
-							"sExtends": "pdf",
-							"sTitle": "clemStats - Landscape", // aka doc-title
-							"sFileName": "<?php print('clemStats_export_landscape'); ?>.pdf",
-							"sPdfOrientation": "landscape",
-							"sPdfMessage": "PDF (landscape)",
-							"sButtonText": "PDF (landscape)"
-						}
-					]
-				},
 				"bSortClasses": false, // should speed it up a little - TESTING
 				"aLengthMenu": [
 					[10, 25, 50, 100, 500, -1],
@@ -185,18 +154,10 @@
 			</div>
 			<div id="navbar" class="navbar-collapse collapse">
 				<ul class="nav navbar-nav">
-					<li>
-						<a href="index.php">
-							<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span> Home</a>
-					</li>
-					<li class="active">
-						<a href="queries.php">
-							<span class="glyphicon glyphicon-stats" aria-hidden="true"></span> Queries</a>
-					</li>
-					<li>
-						<a href="timeline.php">
-							<span class="glyphicon glyphicon-filter" aria-hidden="true"></span> Timeline</a>
-					</li>
+					<li><a href="index.php"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span> Home</a></li>
+					<li class="active"><a href="queries.php"><span class="glyphicon glyphicon-stats" aria-hidden="true"></span> Queries</a></li>
+					<li><a href="timeline.php"><span class="glyphicon glyphicon-filter" aria-hidden="true"></span> Timeline</a></li>
+					<li><a href="tagcloud.php"><span class="glyphicon glyphicon-tags" aria-hidden="true"></span> Tagcloud</a></li>
 					<li class="dropdown">
 						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
 							<span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span> Help
@@ -297,10 +258,7 @@
 	<!-- Placed at the end of the document so the pages load faster -->
 	<script src="js/bootstrap.min.js"></script>
 </body>
-
 </html>
-
-
 
 
 

@@ -5,19 +5,14 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta name="description" content="">
-	<meta name="author" content="">
+	<meta name="description" content="a clementine database analyzer">
+	<meta name="author" content="yafp">
 
 	<link rel="icon" href="img/favicon.ico">
-	<!-- Bootstrap core CSS -->
+
 	<link href="css/bootstrap.min.css" rel="stylesheet">
-	<!-- Bootstrap theme -->
 	<link href="css/bootstrap-theme.min.css" rel="stylesheet">
-	<!-- Custom styles for this template -->
-	<link href="theme.css" rel="stylesheet">
-	<!-- Main CSS -->
 	<link href="css/main.css" rel="stylesheet">
-	<script src="js/ie-emulation-modes-warning.js"></script>
 
 	<?php
 		include "conf/settings.php";
@@ -108,18 +103,10 @@
 			</div>
 			<div id="navbar" class="navbar-collapse collapse">
 				<ul class="nav navbar-nav">
-					<li class="active">
-						<a href="index.php">
-							<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span> Home</a>
-					</li>
-					<li>
-						<a href="queries.php">
-							<span class="glyphicon glyphicon-stats" aria-hidden="true"></span> Queries</a>
-					</li>
-					<li>
-						<a href="timeline.php">
-							<span class="glyphicon glyphicon-filter" aria-hidden="true"></span> Timeline</a>
-					</li>
+					<li class="active"><a href="index.php"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span> Home</a></li>
+					<li><a href="queries.php"><span class="glyphicon glyphicon-stats" aria-hidden="true"></span> Queries</a></li>
+					<li><a href="timeline.php"><span class="glyphicon glyphicon-filter" aria-hidden="true"></span> Timeline</a></li>
+					<li><a href="tagcloud.php"><span class="glyphicon glyphicon-tags" aria-hidden="true"></span> Tagcloud</a></li>
 					<li class="dropdown">
 						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
 							<span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span> Help
@@ -146,7 +133,6 @@
 		<br>
 		<br>
 		<br>
-
 		<div class="panel-group" id="accordion">
 			<div class="panel panel-default">
 				<div class="panel-heading">
@@ -157,25 +143,20 @@
 				</div>
 				<div id="collapse1" class="panel-collapse collapse in">
 					<div class="panel-body">
+						<h4>
 						<?php
-      echo "<h4>Your library comes with a total of <span>".$tracks_all." tracks</span> from <span>".$overall_artists." artists</span> with overall <span>".$overall_albums." albums</span> featuring <span>".$overall_genres." genres</span>.</h4>";
-
-			echo "<h4>This sums up to an approx playtime of <span>".$tracks_playtime." days</span>.</h4>";
-
-			echo "<h4>So far you listened to <span>".$tracks_played." </span> of those <span>".$tracks_all." tracks</span>.</h4>";
-
-			echo "<h4>Insane isn't it</h4>";
-
-      ?>
+							echo "<p>Your library comes with a total of <span>".$tracks_all." tracks</span> from <span>".$overall_artists." artists</span> with overall <span>".$overall_albums." albums</span> featuring <span>".$overall_genres." genres</span>.</p>";
+							echo "<p>This sums up to an approx playtime of <span>".$tracks_playtime." days</span>.</p>";
+							echo "<p>So far you listened to <span>".$tracks_played." </span> of those <span>".$tracks_all." tracks</span>.</p>";
+							echo "<p>Insane isn't it?</p>";
+      				?>
+						</h4>
 					</div>
 				</div>
 			</div>
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<h4 class="panel-title">
-						<a data-toggle="collapse" data-parent="#accordion" href="#collapse2">
-        Random Album Pick</a>
-					</h4>
+					<h4 class="panel-title"><a data-toggle="collapse" data-parent="#accordion" href="#collapse2">Random Album Pick</a></h4>
 				</div>
 				<div id="collapse2" class="panel-collapse collapse in">
 					<div class="panel-body">
@@ -193,13 +174,9 @@
 	</div>
 	<!-- /container -->
 
-
-	<!-- Bootstrap core JavaScript
-    ================================================== -->
-	<!-- Placed at the end of the document so the pages load faster -->
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-	<script src="js/bootstrap.min.js"></script>
-	<script src="js/docs.min.js"></script>
+	<!-- JavaScript -- Placed at the end of the document so the pages load faster -->
+	<script type="text/javascript" language="javascript" src="js/jquery-2.1.4.min.js"></script>
+	<script type="text/javascript" language="javascript" src="js/bootstrap.min.js"></script>
 	<script>
 		$(document).ready(function() {
 			console.log("ready!");
@@ -207,4 +184,5 @@
 		});
 	</script>
 </body>
+
 </html>
