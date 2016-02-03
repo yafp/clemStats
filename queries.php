@@ -15,9 +15,14 @@
 		@import "css/table.css";
 	</style>
 	<link href="css/main.css" rel="stylesheet">
+	<!--
+	<link href="js/DataTables-1.10.9/extensions/Scroller/css/scroller.dataTables.min.css" rel="stylesheet">
+	-->
 
 	<script type="text/javascript" language="javascript" src="js/jquery-2.1.4.min.js"></script>
 	<script type="text/javascript" language="javascript" src="js/DataTables-1.10.9/media/js/jquery.dataTables.min.js"></script>
+	<script type="text/javascript" language="javascript" src="js/DataTables-1.10.9/extensions/Scroller/js/dataTables.scroller.min.js"></script>
+
 	<script type="text/javascript" language="javascript" src="js/Chart.js_Regaddi/Chart.min_20130509.js"></script>
 	<script type="text/javascript" charset="utf-8">
 		var asInitVals = new Array();
@@ -25,6 +30,9 @@
 		$(document).ready(function() {
 			var oTable = $('#example').dataTable({
 				"sDom": 'T<"clear">lfrtip',
+				scrollY:        400,
+				deferRender:    true,
+    			scroller:       true,
 				"bSortClasses": false, // should speed it up a little - TESTING
 				"aLengthMenu": [
 					[10, 25, 50, 100, 500, -1],
@@ -191,8 +199,6 @@
 					</div>
 					<div id="collapse1" class="panel-collapse collapse in">
 						<div class="panel-body">
-							Please select a query from the following collection:
-							<br>
 							<select name="q" value="options" onchange="doPost();">
 								<option disabled selected>Tracks
 									<?php echo "(".$tracks_all.")"; ?>
@@ -510,7 +516,7 @@
 		{
 			echo '<div class="container theme-showcase" role="main">';
 
-			echo "<h4>".$graph_title." <a href='#'><span class='glyphicon glyphicon-refresh' aria-hidden='true'></span></a></h4>";
+			echo "<h4>".$graph_title." <a href='#'><span class='glyphicon glyphicon-refresh' aria-hidden='true' style='color:orange'></span></a></h4>";
 
 			if($graph == true)
 			{
