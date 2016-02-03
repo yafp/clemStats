@@ -143,7 +143,9 @@
 				</div>
 				<div id="collapse1" class="panel-collapse collapse in">
 					<div class="panel-body">
+							<img src="img/appLogo.png" align="right">
 						<h4>
+
 						<?php
 							echo "<p>Your library comes with a total of <span>".$tracks_all." tracks</span> from <span>".$overall_artists." artists</span> with overall <span>".$overall_albums." albums</span> featuring <span>".$overall_genres." genres</span>.</p>";
 							echo "<p>This sums up to an approx playtime of <span>".$tracks_playtime." days</span>.</p>";
@@ -156,12 +158,12 @@
 			</div>
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<h4 class="panel-title"><a data-toggle="collapse" data-parent="#accordion" href="#collapse2">Random Album Pick</a></h4>
+					<h4 class="panel-title"><a data-toggle="collapse" data-parent="#accordion" href="#collapse2">Random album pick</a></h4>
 				</div>
 				<div id="collapse2" class="panel-collapse collapse in">
 					<div class="panel-body">
 						<a href="#" onclick="updateRandomPick();">
-							<span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
+							<span class="glyphicon glyphicon-refresh" aria-hidden="true" style="color:orange"></span>
 						</a>
 						<div id="load">
 							<span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span>
@@ -179,7 +181,7 @@
 	<script type="text/javascript" language="javascript" src="js/bootstrap.min.js"></script>
 	<script>
 		$(document).ready(function() {
-			console.log("ready!");
+			console.log("Document ready...");
 			updateRandomPick();
 		});
 	</script>
