@@ -76,7 +76,7 @@
 							$tracks_playtime = $row7[0] / 60 / 60 /24 /1000000000;
 							$tracks_playtime = round($tracks_playtime, 2);
 						}
-						$now = date("Ymd G:i");				// generate a timestamp
+						//$now = date("Ymd G:i");				// generate a timestamp
 					}
 	?>
 
@@ -89,7 +89,7 @@
 
 
 <body role="document">
-	<!-- Fixed navbar -->
+	<!-- NAV -->
 	<nav class="navbar navbar-inverse navbar-fixed-top">
 		<div class="container">
 			<div class="navbar-header">
@@ -123,12 +123,12 @@
 					</li>
 				</ul>
 			</div>
-			<!--/.nav-collapse -->
 		</div>
 	</nav>
+	<!--/.NAV -->
 
 
-
+	<!-- CONTENT -->
 	<div class="container theme-showcase" role="main">
 		<br>
 		<br>
@@ -136,22 +136,18 @@
 		<div class="panel-group" id="accordion">
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<h4 class="panel-title">
-						<a data-toggle="collapse" data-parent="#accordion" href="#collapse1">
-        General Library Informations <small>(<?php echo $dbpath; ?>)</small></a>
-					</h4>
+					<h4 class="panel-title"><a data-toggle="collapse" data-parent="#accordion" href="#collapse1">General Library Informations <small>(<?php echo $dbpath; ?>)</small></a></h4>
 				</div>
 				<div id="collapse1" class="panel-collapse collapse in">
 					<div class="panel-body">
-							<img src="img/appLogo.png" align="right">
+						<img src="img/appLogo.png" align="right">
 						<h4>
-
 						<?php
 							echo "<p>Your library comes with a total of <span>".$tracks_all." tracks</span> from <span>".$overall_artists." artists</span> with overall <span>".$overall_albums." albums</span> featuring <span>".$overall_genres." genres</span>.</p>";
 							echo "<p>This sums up to an approx playtime of <span>".$tracks_playtime." days</span>.</p>";
 							echo "<p>So far you listened to <span>".$tracks_played." </span> of those <span>".$tracks_all." tracks</span>.</p>";
 							echo "<p>Insane isn't it?</p>";
-      				?>
+      					?>
 						</h4>
 					</div>
 				</div>
@@ -162,21 +158,27 @@
 				</div>
 				<div id="collapse2" class="panel-collapse collapse in">
 					<div class="panel-body">
-						<a href="#" onclick="updateRandomPick();">
-							<span class="glyphicon glyphicon-refresh" aria-hidden="true" style="color:orange"></span>
-						</a>
+						<a href="#" onclick="updateRandomPick();"><span class="glyphicon glyphicon-refresh" aria-hidden="true" style="color:orange"></span></a>
 						<div id="load">
-							<span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span>
-							...loading random album pick
+							<div class="progress">
+								<div class="progress-bar progress-bar-warning progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%" style="color:orange">
+									<span class="sr-only">45% Complete</span>
+						 </div>
+						</div>
+
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-	<!-- /container -->
+	<!--/.CONTENT -->
 
-	<!-- JavaScript -- Placed at the end of the document so the pages load faster -->
+
+
+
+
+	<!-- JavaScript -->
 	<script type="text/javascript" language="javascript" src="js/jquery-2.1.4.min.js"></script>
 	<script type="text/javascript" language="javascript" src="js/bootstrap.min.js"></script>
 	<script>
@@ -186,5 +188,4 @@
 		});
 	</script>
 </body>
-
 </html>
