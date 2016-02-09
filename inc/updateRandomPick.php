@@ -1,6 +1,16 @@
 <?php
 	include "../conf/settings.php";
 
+	// start loading animation
+	echo '<div id="loadingAnimation">
+	<div class="progress">
+		<div class="progress-bar progress-bar-warning progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%" style="color:orange">
+			<span class="sr-only">45% Complete</span>
+		</div>
+	</div>
+	</div>';
+
+
 	// sqlite stuff - access clementine db file
 	class MyDB2 extends SQLite3
 	{
@@ -40,33 +50,36 @@
 
 	if($random_album_playcount == 0)
 	{
-		echo "<b>Listened: </b> 0 songs of this album.";
+		echo "<b>Listened: </b> 0 songs of this album.<br>";
 	}
 	else
 	{
-		echo "<b>Listened: </b>one or more songs of this album (Track-Playcount: ".$random_album_playcount.")";
+		echo "<b>Listened: </b>one or more songs of this album (Playcount: ".$random_album_playcount.")<br>";
 	}
 
-	// Display cover for current random album pick if enabled in settings.php
+	// Display cover for current random album pick if enabled in conf/settings.php
 	//
 	if($enableRandomCover == 1)
 	{
 		$searchtag = $random_artist." ".$random_album;
 		$searchtag = urlencode($searchtag);
-		$link = "http://images.google.at/images?hl=de&q=$searchtag&btnG=Bilder-Suche&gbv=1";
-		echo "<br>";
 
-		$code = file_get_contents($link,'r');
-		ereg ("imgurl=http://www.[A-Za-z0-9-]*.[A-Za-z]*[^.]*.[A-Za-z]*", $code, $img);
-		ereg ("http://(.*)", $img[0], $img_pic);
+		// http://simplehtmldom.sourceforge.net/
+		include "simple_html_dom.php";
 
-		if($img_pic[0] != '')  // if we found an image - show it (random cover)
+		// Create DOM from URL or file
+		$html = file_get_html("https://www.google.de/search?q=$searchtag&tbm=isch&tbs=isz:l");
+
+		// Find all images
+		//foreach($html->find('img') as $element)
+		       //echo $element->src . '<br>';
+
+
+	    // Find first image images
+	   	foreach($html->find('img') as $element)
 		{
-			echo "<img src=".$img_pic[0]." width='300' border='1' title='cover art is fetched online.'>";
-		}
-		else
-		{
-			echo "<br><b>Cover:</b><br>Problems fetching a cover";
+			if ($element === reset($html->find('img')))
+				echo "<img src=$element->src align='right'>";
 		}
 	}
 
@@ -85,4 +98,9 @@
 		echo "&nbsp;<a href='http://www.whosampled.com/search/artists/?q=".$random_artist."' target='_new'>WhoSampled</a>";						// whosampled
 	}
 
+
 ?>
+
+<script type="text/javascript">
+	$('#loadingAnimation').fadeOut("slow");
+</script>
