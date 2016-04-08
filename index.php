@@ -153,11 +153,13 @@
 			</div>
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<h4 class="panel-title"><a data-toggle="collapse" data-parent="#accordion" href="#collapse2">Random album pick</a></h4>
+					<h4 class="panel-title"><a data-toggle="collapse" data-parent="#accordion" href="#collapse2"><a href="#" onclick="updateRandomPick();"><span class="glyphicon glyphicon-refresh" aria-hidden="true" style="color:orange"></span></a> Random album pick</a></h4>
 				</div>
 				<div id="collapse2" class="panel-collapse collapse in">
 					<div class="panel-body">
+						<!--
 						<a href="#" onclick="updateRandomPick();"><span class="glyphicon glyphicon-refresh" aria-hidden="true" style="color:orange"></span></a>
+						-->
 						<div id="load">
 							<div class="progress">
 								<div class="progress-bar progress-bar-warning progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%" style="color:orange">
@@ -174,15 +176,12 @@
 	<!--/.CONTENT -->
 
 
-
-
-
 	<!-- JavaScript -->
 	<script type="text/javascript" language="javascript" src="js/jquery-2.1.4.min.js"></script>
 	<script type="text/javascript" language="javascript" src="js/bootstrap.min.js"></script>
 	<script>
 		$(document).ready(function() {
-			console.log("Document ready...");
+			//console.log("Document ready...");
 			updateRandomPick();
 		});
 	</script>
