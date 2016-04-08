@@ -49,8 +49,8 @@
 							<li class="dropdown-header">Version</li>
 							<li><a href="#" onclick="checkForUpdates();">clemStats v<?php echo $version;?></a></li>
 							<li class="divider"></li>
-							<li class="dropdown-header">Documentation</li>
-							<li><a href="https://github.com/yafp/clemStats/wiki">Wiki</a></li>
+							<li class="dropdown-header">Development</li>
+							<li><a href="https://github.com/yafp/clemStats/">Code</a></li>
 							<li><a href="https://github.com/yafp/clemStats/issues">Issues</a></li>
 						</ul>
 					</li>
