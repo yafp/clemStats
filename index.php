@@ -105,7 +105,6 @@
 				<ul class="nav navbar-nav">
 					<li class="active"><a href="index.php"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span> Home</a></li>
 					<li><a href="queries.php"><span class="glyphicon glyphicon-stats" aria-hidden="true"></span> Queries</a></li>
-					<li><a href="timeline.php"><span class="glyphicon glyphicon-filter" aria-hidden="true"></span> Timeline</a></li>
 					<li><a href="tagcloud.php"><span class="glyphicon glyphicon-tags" aria-hidden="true"></span> Tagcloud</a></li>
 					<li class="dropdown">
 						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
