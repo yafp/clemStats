@@ -13,8 +13,6 @@
 	<link href="css/bootstrap-theme.min.css" rel="stylesheet">
 	<link href="css/main.css" rel="stylesheet">
 
-
-
 	<?php
 		include "conf/settings.php";
 		include "inc/version.php";
@@ -127,26 +125,72 @@
 		// init stuff
 		include "conf/settings.php";			// contains some core-strings
 
-
 		$cloudPattern = $_GET["tagCloudDataSource"];
 		$amount = $_GET["amount"];
 
-		echo $amount;
+		//echo $amount;
 		echo "<br>";
 		//echo $cloudPattern;
 
 		switch ($cloudPattern)
 		{
 		    case 1:
-		        echo "SELECT distinct artist, sum(playcount) FROM songs WHERE playcount > 0 and unavailable != '1' GROUP BY artist ORDER BY sum(playcount) desc LIMIT 10";
+				$sql_statement = "SELECT distinct artist, sum(playcount) FROM songs WHERE playcount > 0 and unavailable != '1' GROUP BY artist ORDER BY sum(playcount) desc LIMIT $amount";
 		        break;
 		    case 2:
-		        echo "SELECT distinct genre, sum(playcount), count(*) FROM songs WHERE playcount > 0 and unavailable != '1' GROUP BY genre ORDER BY sum(playcount) desc LIMIT 10";
+				$sql_statement = "SELECT distinct genre, sum(playcount), count(*) FROM songs WHERE playcount > 0 and unavailable != '1' GROUP BY genre ORDER BY sum(playcount) desc LIMIT $amount";
 		        break;
 		    case 3:
-		        echo "SELECT distinct album, sum(playcount), artist FROM songs WHERE playcount > 0 and unavailable != '1'  and album!='' GROUP BY album ORDER BY sum(playcount) desc LIMIT 10";
+		        $sql_statement = "SELECT distinct album, sum(playcount), artist FROM songs WHERE playcount > 0 and unavailable != '1'  and album!='' GROUP BY album ORDER BY sum(playcount) desc LIMIT $amount";
 		        break;
 		}
+		//echo $sql_statement;
+
+		// executing the QUERY
+
+		// sqlite handling
+		class MyDB extends SQLite3
+		{
+			function __construct()
+			{
+				include "conf/settings.php";
+				$this->open($dbpath);
+			}
+		}
+
+		$db = new MyDB();
+
+		$result = $db->query($sql_statement);	// run sql query
+		while ($row = $result->fetchArray()) // handle the data
+		{
+			echo $row[0];
+			echo $row[1];
+			echo "<br>";
+
+			$resultArrayText[] = $row[0];
+			$resultArrayAmount[] = $row[1];
+		}
+
+		// output size of php arrays
+		//echo count($resultArrayText);
+
+		// building a javascript array
+
+		?>
+
+		<script>
+			var array = new array();
+			foreach($resultArrayText as $i => $ary)
+			{
+				echo "array[".$i."] = new array(".$ary['dt'].",".$ary['number'].");
+			}
+
+
+
+
+		</script>
+
+		<?php
 	}
 
 ?>

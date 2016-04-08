@@ -15,76 +15,76 @@
 	<link href="css/main.css" rel="stylesheet">
 
 	<?php
-		include "conf/settings.php";
-		include "inc/version.php";
-		echo "<title>".$appname." - ".$version." - ".$tagline."</title>";	// generate html header-title
+	include "conf/settings.php";
+	include "inc/version.php";
+	echo "<title>".$appname." - ".$version." - ".$tagline."</title>";	// generate html header-title
 
-		if (file_exists($dbpath))
-					{
-						// sqlite stuff - access clementine db file
-						class MyDB2 extends SQLite3
-						{
-							function __construct()
-							{
-								include "conf/settings.php";
-								$this->open($dbpath);
-							}
+	if (file_exists($dbpath))
+	{
+		// sqlite stuff - access clementine db file
+		class MyDB2 extends SQLite3
+		{
+			function __construct()
+			{
+				include "conf/settings.php";
+				$this->open($dbpath);
+			}
 
-						}
-						$db2 = new MyDB2();
+		}
+		$db2 = new MyDB2();
 
-						// Show: TRACKS
-						$result5 = $db2->query('SELECT COUNT(*) FROM songs WHERE unavailable !="1"');
-						while ($row5 = $result5->fetchArray())
-						{
-							$tracks_all = $row5[0];
-						}
+		// Show: TRACKS
+		$result5 = $db2->query('SELECT COUNT(*) FROM songs WHERE unavailable !="1"');
+		while ($row5 = $result5->fetchArray())
+		{
+			$tracks_all = $row5[0];
+		}
 
-						// Show: PLAYED
-						$result6 = $db2->query('SELECT COUNT(*) FROM songs WHERE lastplayed <> "-1" and unavailable !="1"');
-						while ($row6 = $result6->fetchArray())
-						{
-							$tracks_played = $row6[0];
-							$tracks_played_ratio =  ($tracks_played/$tracks_all)*100;
-						}
+		// Show: PLAYED
+		$result6 = $db2->query('SELECT COUNT(*) FROM songs WHERE lastplayed <> "-1" and unavailable !="1"');
+		while ($row6 = $result6->fetchArray())
+		{
+			$tracks_played = $row6[0];
+			$tracks_played_ratio =  ($tracks_played/$tracks_all)*100;
+		}
 
-						// Show: ARTISTS
-						$result4 = $db2->query('SELECT COUNT(DISTINCT artist) FROM songs WHERE unavailable !="1"');
-						while ($row4 = $result4->fetchArray())
-						{
-							$overall_artists = $row4[0];
-						}
+		// Show: ARTISTS
+		$result4 = $db2->query('SELECT COUNT(DISTINCT artist) FROM songs WHERE unavailable !="1"');
+		while ($row4 = $result4->fetchArray())
+		{
+			$overall_artists = $row4[0];
+		}
 
-						// Show: ALBUMS
-						$result3 = $db2->query('SELECT COUNT(DISTINCT album) FROM songs WHERE unavailable !="1"');
-						while ($row3 = $result3->fetchArray())
-						{
-							$overall_albums = $row3[0];
-						}
+		// Show: ALBUMS
+		$result3 = $db2->query('SELECT COUNT(DISTINCT album) FROM songs WHERE unavailable !="1"');
+		while ($row3 = $result3->fetchArray())
+		{
+			$overall_albums = $row3[0];
+		}
 
-						// Show: GENRES
-						$result2 = $db2->query('SELECT COUNT(DISTINCT genre) FROM songs WHERE unavailable !="1"');
-						while ($row2 = $result2->fetchArray())
-						{
-							$overall_genres = $row2[0];
-						}
+		// Show: GENRES
+		$result2 = $db2->query('SELECT COUNT(DISTINCT genre) FROM songs WHERE unavailable !="1"');
+		while ($row2 = $result2->fetchArray())
+		{
+			$overall_genres = $row2[0];
+		}
 
-						// Show: PLAYTIME
-						$result7 = $db2->query('SELECT SUM(length) FROM songs WHERE unavailable !="1"');
-						while ($row7 = $result7->fetchArray())
-						{
-							$tracks_playtime = $row7[0] / 60 / 60 /24 /1000000000;
-							$tracks_playtime = round($tracks_playtime, 2);
-						}
-						//$now = date("Ymd G:i");				// generate a timestamp
-					}
+		// Show: PLAYTIME
+		$result7 = $db2->query('SELECT SUM(length) FROM songs WHERE unavailable !="1"');
+		while ($row7 = $result7->fetchArray())
+		{
+			$tracks_playtime = $row7[0] / 60 / 60 /24 /1000000000;
+			$tracks_playtime = round($tracks_playtime, 2);
+		}
+		//$now = date("Ymd G:i");				// generate a timestamp
+	}
 	?>
 
-		<script>
-			function updateRandomPick() {
-				$('#load').load('inc/updateRandomPick.php').fadeIn("slow");
-			}
-		</script>
+	<script>
+	function updateRandomPick() {
+		$('#load').load('inc/updateRandomPick.php').fadeIn("slow");
+	}
+	</script>
 </head>
 
 
@@ -141,49 +141,49 @@
 					<div class="panel-body">
 						<img src="img/appLogo.png" align="right">
 						<h4>
-						<?php
+							<?php
 							echo "<p>Your library comes with a total of <span>".$tracks_all." tracks</span> from <span>".$overall_artists." artists</span> with overall <span>".$overall_albums." albums</span> featuring <span>".$overall_genres." genres</span>.</p>";
 							echo "<p>This sums up to an approx playtime of <span>".$tracks_playtime." days</span>.</p>";
 							echo "<p>So far you listened to <span>".$tracks_played." </span> of those <span>".$tracks_all." tracks</span>.</p>";
 							echo "<p>Insane isn't it?</p>";
-      					?>
+							?>
 						</h4>
 					</div>
 				</div>
 			</div>
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<h4 class="panel-title"><a data-toggle="collapse" data-parent="#accordion" href="#collapse2"><a href="#" onclick="updateRandomPick();"><span class="glyphicon glyphicon-refresh" aria-hidden="true" style="color:orange"></span></a> Random album pick</a></h4>
+					<h4 class="panel-title"><a data-toggle="collapse" data-parent="#accordion" href="#collapse2">Random album pick <a href="#" onclick="updateRandomPick();"><span class="glyphicon glyphicon-refresh" aria-hidden="true" style="color:orange"></span></a></a></h4>
 				</div>
 				<div id="collapse2" class="panel-collapse collapse in">
 					<div class="panel-body">
 						<!--
 						<a href="#" onclick="updateRandomPick();"><span class="glyphicon glyphicon-refresh" aria-hidden="true" style="color:orange"></span></a>
-						-->
-						<div id="load">
-							<div class="progress">
-								<div class="progress-bar progress-bar-warning progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%" style="color:orange">
-									<span class="sr-only">45% Complete</span>
-						 </div>
+					-->
+					<div id="load">
+						<div class="progress">
+							<div class="progress-bar progress-bar-warning progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%" style="color:orange">
+								<span class="sr-only">45% Complete</span>
+							</div>
 						</div>
 
-						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-	<!--/.CONTENT -->
+</div>
+<!--/.CONTENT -->
 
 
-	<!-- JavaScript -->
-	<script type="text/javascript" language="javascript" src="js/jquery-2.1.4.min.js"></script>
-	<script type="text/javascript" language="javascript" src="js/bootstrap.min.js"></script>
-	<script>
-		$(document).ready(function() {
-			//console.log("Document ready...");
-			updateRandomPick();
-		});
-	</script>
+<!-- JavaScript -->
+<script type="text/javascript" language="javascript" src="js/jquery-2.1.4.min.js"></script>
+<script type="text/javascript" language="javascript" src="js/bootstrap.min.js"></script>
+<script>
+$(document).ready(function() {
+	//console.log("Document ready...");
+	updateRandomPick();
+});
+</script>
 </body>
 </html>
